@@ -8,7 +8,7 @@
 
 import AppKit
 import Log4swift
-import IDDLegacy
+import IDDObjectiveCLegacy
 
 extension URL {
     static public let logger: Logger = {

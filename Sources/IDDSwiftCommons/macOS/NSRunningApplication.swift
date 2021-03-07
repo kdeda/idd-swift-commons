@@ -7,7 +7,7 @@
 //
 
 import AppKit
-import IDDLegacy
+import IDDObjectiveCLegacy
 
 public extension NSRunningApplication {
     

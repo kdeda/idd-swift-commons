@@ -8,7 +8,7 @@
 
 import Foundation
 import Log4swift
-import IDDLegacy
+import IDDObjectiveCLegacy
 
 public struct ToolBarHistoryItem: Codable, CustomStringConvertible {
     var date = Date()
