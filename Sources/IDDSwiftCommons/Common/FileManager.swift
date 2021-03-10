@@ -6,10 +6,14 @@
 //  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 
-import Foundation
+import AppKit
 import Log4swift
 
 extension FileManager {
+    private static var mountedVolumes = [String]()
+    private static var mountedVolumesLastFetchDate = Date.distantPast
+    private static var registerForWorkSpaceNotifications = false
+
     static let logger: Logger = {
         return IDDLog4swift.getLogger("FileManager")
     }()
@@ -92,8 +96,32 @@ extension FileManager {
         return false
     }
 
-    private static var mountedVolumes = [String]()
-    private static var mountedVolumesLastFetchDate = Date.distantPast
+    private func registerForWorkSpaceNotifications() {
+        guard !Self.registerForWorkSpaceNotifications
+        else { return }
+
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(self.didMountNotification(_:)), name: NSWorkspace.didMountNotification, object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(self.didUnmountNotification(_:)), name: NSWorkspace.didUnmountNotification, object: nil)
+        Self.registerForWorkSpaceNotifications = true
+    }
+
+    @objc private func didMountNotification(_ notification: NSNotification) {
+        objc_sync_enter(self)
+        defer {
+            objc_sync_exit(self)
+        }
+        Self.logger.info("notification: '\(notification.userInfo ?? [AnyHashable: Any]())'")
+        Self.mountedVolumesLastFetchDate = Date.distantPast
+    }
+    
+    @objc  private func didUnmountNotification(_ notification: NSNotification) {
+        objc_sync_enter(self)
+        defer {
+            objc_sync_exit(self)
+        }
+        Self.logger.info("notification: '\(notification.userInfo ?? [AnyHashable: Any]())'")
+        Self.mountedVolumesLastFetchDate = Date.distantPast
+    }
 
     /*
      * /dev
@@ -129,10 +157,23 @@ extension FileManager {
         // do not really fetch unless a second has elapsed since last fetch
         //
         guard refetch,
-              Self.mountedVolumesLastFetchDate.timeIntervalSinceNow * 1000 > 1000
-        else { return Self.mountedVolumes }
+              -Self.mountedVolumesLastFetchDate.timeIntervalSinceNow * 1000 > 1000
+        else {
+            // Self.logger.info("cache: '\(-Self.mountedVolumesLastFetchDate.timeIntervalSinceNow * 1000)'")
+            return Self.mountedVolumes }
+        
+        // Self.logger.info("fetch: '\(-Self.mountedVolumesLastFetchDate.timeIntervalSinceNow * 1000)'")
+        registerForWorkSpaceNotifications()
         Self.mountedVolumes = fetchMountedVolumes()
         Self.mountedVolumesLastFetchDate = Date()
         return Self.mountedVolumes
+    }
+    
+    public func isMountedVolume(_ basePath: String) -> Bool {
+        objc_sync_enter(self)
+        defer {
+            objc_sync_exit(self)
+        }
+        return Self.mountedVolumes.firstIndex(where: { $0 == basePath}) != nil
     }
 }
