@@ -40,5 +40,5 @@ public struct UserDefaultsBacked<Value> {
 
 public extension UserDefaults {
     @UserDefaultsBacked(key: "pathPrefix", defaultValue: "")
-    public static var pathPrefix: String
+    static var pathPrefix: String
 }

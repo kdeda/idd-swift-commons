@@ -9,14 +9,6 @@
 import Foundation
 
 extension Date {
-    private static let _elapsedTimeFormater: NumberFormatter = {
-        let rv = NumberFormatter()
-
-        rv.locale = Locale.init(identifier: "en_US_POSIX")
-        rv.maximumFractionDigits = 3
-        rv.minimumFractionDigits = 3
-        return rv
-    }()
     public static let defaultFormatter = DateFormatter.init(withFormatString: "yyyy-MM-dd HH:mm:ss.SSS Z", andPOSIXLocale: true)
 
     public static func elapsedTime(for closure: (()-> Swift.Void)) -> String {
@@ -26,7 +18,7 @@ extension Date {
     }
 
     public static func elapsedTime(from elapsedTimeInMilliseconds: Double) -> String {
-        return Date._elapsedTimeFormater.string(from: elapsedTimeInMilliseconds as NSNumber) ?? "0.1968"
+        elapsedTimeInMilliseconds.with3Digits
     }
     
     // positive number if some time has elapsed since now
@@ -38,11 +30,11 @@ extension Date {
     // positive number if some time has elapsed since now
     //
     public var elapsedTimeInSeconds: Double {
-        return (-self.timeIntervalSinceNow)
+        (-self.timeIntervalSinceNow)
     }
 
     public var elapsedTime: String {
-        return Date.elapsedTime(from: elapsedTimeInMilliseconds)
+        elapsedTimeInMilliseconds.with3Digits
     }
 
     public func string(withFormat formatString: String) -> String {
