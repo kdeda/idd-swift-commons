@@ -1,6 +1,6 @@
 //
 //  CenterToolBarHistory.swift
-//  WhatSize
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 1/14/19.
 //  Copyright (C) 1997-2021 id-design, inc. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  Localizer.swift
-//  WhatSize
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 7/4/17.
 //  Copyright (C) 1997-2021 id-design, inc. All rights reserved.

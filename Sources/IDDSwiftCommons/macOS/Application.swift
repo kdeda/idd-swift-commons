@@ -1,9 +1,9 @@
 //
 //  Application.swift
-//  IDDAppKit
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 6/9/18.
-//  Copyright © 2018 id design, inc. All rights reserved.
+//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 
 import AppKit

@@ -1,6 +1,6 @@
 //
 //  JASONHandler.swift
-//  WhatSize
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 8/15/17.
 //  Copyright (C) 1997-2021 id-design, inc. All rights reserved.

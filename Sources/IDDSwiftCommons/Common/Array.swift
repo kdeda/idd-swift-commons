@@ -1,9 +1,9 @@
 //
 //  Array.swift
-//  IDDAppKit
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 12/26/19.
-//  Copyright (C) 1997-2018 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 
 import Foundation

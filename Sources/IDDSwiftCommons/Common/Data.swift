@@ -1,6 +1,6 @@
 //
 //  Data.swift
-//  WhatSize
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 9/17/17.
 //  Copyright (C) 1997-2021 id-design, inc. All rights reserved.

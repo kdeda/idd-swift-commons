@@ -1,9 +1,9 @@
 //
 //  SortDescriptor.swift
-//  IDDAppKit
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 5/9/20.
-//  Copyright (C) 1997-2018 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 
 import Foundation

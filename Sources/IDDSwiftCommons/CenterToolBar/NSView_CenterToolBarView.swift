@@ -1,9 +1,9 @@
 //
 //  NSView_CenterToolBarView.swift
-//  IDDAppKit
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 5/23/19.
-//  Copyright (C) 1997-2018 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 //  https://www.raywenderlich.com/1101-core-graphics-on-macos-tutorial
 //

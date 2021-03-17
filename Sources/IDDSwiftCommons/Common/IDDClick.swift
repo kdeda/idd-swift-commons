@@ -1,9 +1,9 @@
 //
 //  IDDClick.swift
-//  FontAgent
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 6/11/18.
-//  Copyright © 2018 id-designs, inc. All rights reserved.
+//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 
 public typealias IDDClick = (_ sender: Any) -> Swift.Void

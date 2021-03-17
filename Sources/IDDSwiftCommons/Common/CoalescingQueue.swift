@@ -1,9 +1,9 @@
 //
 //  CoalescingQueue.swift
-//  IDDAppKit
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 9/10/19.
-//  Copyright © 2019 id design, inc. All rights reserved.
+//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 
 import Foundation

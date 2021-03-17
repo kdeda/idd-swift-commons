@@ -1,6 +1,6 @@
 //
 //  TitlebarAccessoryView.swift
-//  WhatSize
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 10/7/17.
 //  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
