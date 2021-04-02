@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "IDDSwiftCommons",
     platforms: [
-        //      .iOS(.v13),
+        // .iOS(.v13),
         .macOS(.v10_12)
     ],
     products: [
@@ -28,7 +28,9 @@ let package = Package(
         .target(
             name: "IDDSwiftCommons",
             dependencies: ["Log4swift", "IDDObjectiveCLegacy", "ZSTDSwift"],
-            resources: [.copy("CenterToolBar/CenterToolBarHistory_activityButton-mask@2x.png")]
+            resources: [
+                .copy("CenterToolBar/CenterToolBarHistory_activityButton-mask@2x.png")
+            ]
         ),
         .testTarget(
             name: "IDDSwiftCommonsTests",

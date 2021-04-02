@@ -40,7 +40,10 @@ extension NSAlert {
         alert.alertStyle = alertStyle
         alert.messageText = messageText
         alert.informativeText = informativeText
-        
+        // https://stackoverflow.com/questions/14820335/nsalert-resize-window
+        //
+        alert.accessoryView = NSView(frame: NSMakeRect(0, 0, 360, 0))
+
         buttonNames.forEach { (button) in
             alert.addButton(withTitle: button)
         }
