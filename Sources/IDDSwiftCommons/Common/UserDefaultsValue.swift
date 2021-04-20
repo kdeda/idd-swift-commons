@@ -1,5 +1,5 @@
 //
-//  UserDefaults.swift
+//  UserDefaultsValue.swift
 //  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 3/25/20.
@@ -9,7 +9,7 @@
 import Foundation
 
 @propertyWrapper
-public struct UserDefaultsBacked<Value> {
+public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value: Codable {
     let key: String
     let defaultValue: Value
     var storage: UserDefaults = .standard
@@ -27,18 +27,18 @@ public struct UserDefaultsBacked<Value> {
         get {
             let value = storage.value(forKey: key) as? Value
             if let stringValue = value as? String, stringValue.isEmpty {
+                // for string values we want to equate nil with empty string as well
                 return defaultValue
             }
             return value ?? defaultValue
         }
         set {
             storage.setValue(newValue, forKey: key)
-            storage.synchronize()
         }
     }
 }
 
 public extension UserDefaults {
-    @UserDefaultsBacked(key: "pathPrefix", defaultValue: "")
+    @UserDefaultsValue(key: "pathPrefix", defaultValue: "")
     static var pathPrefix: String
 }
