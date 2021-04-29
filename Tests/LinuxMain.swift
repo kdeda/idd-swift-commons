@@ -1,7 +1,7 @@
 import XCTest
 
-import IDDCommonsTests
+import IDDSwiftCommonsTests
 
 var tests = [XCTestCaseEntry]()
-tests += IDDCommonsTests.allTests()
+tests += IDDSwiftCommonsTests.allTests()
 XCTMain(tests)
