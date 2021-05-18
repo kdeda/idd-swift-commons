@@ -5,8 +5,12 @@
 //  Created by Klajd Deda on 3/25/20.
 //  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
+//  TODO
+//  @propertyWrapper do break TCA
+//
 
 import Foundation
+import Log4swift
 
 @propertyWrapper
 public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value: Codable {
@@ -25,15 +29,34 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
     //
     public var wrappedValue: Value {
         get {
-            let value = storage.value(forKey: key) as? Value
+            let storedValue = storage.value(forKey: key) as? String
+            let encoder = JSONDecoder()
+            
+            encoder.dateDecodingStrategy = .iso8601
+            // IDDLog4swift[Self].info("loaded raw value \(self.key): '\(storedValue ?? "unknown ...")'")
+            let data = storedValue?.data(using: .utf8) ?? Data()
+            let value = try? encoder.decode(Value.self, from: data)
             if let stringValue = value as? String, stringValue.isEmpty {
                 // for string values we want to equate nil with empty string as well
                 return defaultValue
             }
+            IDDLog4swift[Self].info("loaded \(self.key): '\(value ?? defaultValue)'")
             return value ?? defaultValue
         }
         set {
-            storage.setValue(newValue, forKey: key)
+            do {
+                let encoder = JSONEncoder()
+                
+                encoder.outputFormatting = .prettyPrinted
+                encoder.dateEncodingStrategy = .iso8601
+                let data = try encoder.encode(newValue)
+                let storedValue = String(data: data, encoding: .utf8) ?? ""
+                
+                storage.setValue(storedValue, forKey: key)
+                // IDDLog4swift[Self].info("stored \(self.key): '\(storedValue)'")
+            } catch {
+                IDDLog4swift[Self].error("error: '\(error.localizedDescription)'")
+            }
         }
     }
 }
