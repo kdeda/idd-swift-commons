@@ -40,7 +40,7 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
                 // for string values we want to equate nil with empty string as well
                 return defaultValue
             }
-            IDDLog4swift[Self].info("loaded \(self.key): '\(value ?? defaultValue)'")
+            // IDDLog4swift[Self].info("loaded \(self.key): '\(value ?? defaultValue)'")
             return value ?? defaultValue
         }
         set {
