@@ -15,7 +15,7 @@ import Log4swift
 @objcMembers
 public class JSONUploadFileItem: NSObject {
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
 
     public var fileLocation: URL?

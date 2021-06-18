@@ -14,7 +14,7 @@ public class Dock {
     static let bundleIdentifier = "com.apple.dock"
     
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
 
     public func addApplication(with path: String) -> Bool {

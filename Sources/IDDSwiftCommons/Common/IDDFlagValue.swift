@@ -26,7 +26,7 @@ import Log4swift
 
 public class IDDFlagValue: NSNumber {
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
     
     private var _maxLength: Int = 0
@@ -212,7 +212,7 @@ extension String {
             
             return char == String.ONE_CHAR
         } else {
-            let logger = IDDLog4swift.getLogger(self)
+            let logger = Log4swift.getLogger(self)
             logger.error("out of bounds: '\(index)' string: '\(self)'")
         }
         return false
@@ -227,7 +227,7 @@ extension String {
             rv.replaceSubrange(start..<end, with: (yesNo ? "1" : "0"))
             return rv
         } else {
-            let logger = IDDLog4swift.getLogger(self)
+            let logger = Log4swift.getLogger(self)
             logger.error("out of bounds: '\(index)' string: '\(self)'")
         }
         return self

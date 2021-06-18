@@ -17,7 +17,7 @@ public class UniqueString {
         return rv
     }()
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
 
     var cache = [String: Int]()

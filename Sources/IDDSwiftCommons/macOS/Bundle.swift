@@ -26,7 +26,7 @@ public extension Bundle {
      * To unpack use the counter part daemonVersion
      */
     var daemonVersion: String {
-        let logger = IDDLog4swift.getLogger(self)
+        let logger = Log4swift.getLogger(self)
         let rv: String = {
             let json = [
                 "CFBundleShortVersionString": Bundle.main[.info, "CFBundleShortVersionString", "1.0.1"],
@@ -50,7 +50,7 @@ public extension Bundle {
     
     func daemonVersion(fromJSON daemonVersionJSON: String) -> [String: String] {
         if let jsonBytes = daemonVersionJSON.data(using: .utf8) {
-            let logger = IDDLog4swift.getLogger(self)
+            let logger = Log4swift.getLogger(self)
             
             do {
                 if let daemonVersion = try JSONSerialization.jsonObject(with: jsonBytes, options: .allowFragments) as? [String : String] {

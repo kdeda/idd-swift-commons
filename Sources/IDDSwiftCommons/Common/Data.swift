@@ -16,7 +16,7 @@ import CryptoKit
 
 extension Data {
     static public let logger: Logger = {
-        return IDDLog4swift.getLogger("Data")
+        return Log4swift.getLogger("Data")
     }()
 
     /**

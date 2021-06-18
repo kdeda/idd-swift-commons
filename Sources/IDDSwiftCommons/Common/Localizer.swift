@@ -17,7 +17,7 @@ public class Localizer {
     static let shared = Localizer()
 
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
 
     lazy var localizableDictionary: Dictionary<String, Dictionary<String, String>> = {

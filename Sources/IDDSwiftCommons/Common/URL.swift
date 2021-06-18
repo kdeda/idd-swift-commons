@@ -12,7 +12,7 @@ import IDDObjectiveCLegacy
 
 extension URL {
     static public let logger: Logger = {
-        return IDDLog4swift.getLogger("URL")
+        return Log4swift.getLogger("URL")
     }()
 
     /*
@@ -122,7 +122,7 @@ extension URL {
         do {
             return try self.checkResourceIsReachable()
         } catch {
-            // let logger = IDDLog4swift.getLogger(self)
+            // let logger = Log4swift.getLogger(self)
             // logger.error("error: '\(error.localizedDescription)'")
         }
         return false

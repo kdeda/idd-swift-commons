@@ -11,7 +11,7 @@ import Log4swift
 
 public class CoalescingQueue<Element> {
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
     
     public typealias CoalescingQueueAction = (_ updates: [Element]) -> Swift.Void

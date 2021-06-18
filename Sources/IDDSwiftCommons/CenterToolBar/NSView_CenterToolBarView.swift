@@ -13,7 +13,7 @@ import Log4swift
 
 open class NSView_CenterToolBarView: NSView {
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
     
     private var _cell: NSButtonCell = {

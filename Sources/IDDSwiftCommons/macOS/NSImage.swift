@@ -11,7 +11,7 @@ import Log4swift
 
 public extension NSImage {
     static let logger: Logger = {
-        return IDDLog4swift.getLogger("NSImage")
+        return Log4swift.getLogger("NSImage")
     }()
 
     static func template(named imageName: NSImage.Name) -> NSImage? {

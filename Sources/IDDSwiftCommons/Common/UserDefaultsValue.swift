@@ -33,14 +33,14 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
             let encoder = JSONDecoder()
             
             encoder.dateDecodingStrategy = .iso8601
-            // IDDLog4swift[Self].info("loaded raw value \(self.key): '\(storedValue ?? "unknown ...")'")
+            // Log4swift[Self].info("loaded raw value \(self.key): '\(storedValue ?? "unknown ...")'")
             let data = storedValue?.data(using: .utf8) ?? Data()
             let value = try? encoder.decode(Value.self, from: data)
             if let stringValue = value as? String, stringValue.isEmpty {
                 // for string values we want to equate nil with empty string as well
                 return defaultValue
             }
-            // IDDLog4swift[Self].info("loaded \(self.key): '\(value ?? defaultValue)'")
+            // Log4swift[Self].info("loaded \(self.key): '\(value ?? defaultValue)'")
             return value ?? defaultValue
         }
         set {
@@ -53,9 +53,9 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
                 let storedValue = String(data: data, encoding: .utf8) ?? ""
                 
                 storage.setValue(storedValue, forKey: key)
-                // IDDLog4swift[Self].info("stored \(self.key): '\(storedValue)'")
+                // Log4swift[Self].info("stored \(self.key): '\(storedValue)'")
             } catch {
-                IDDLog4swift[Self].error("error: '\(error.localizedDescription)'")
+                Log4swift[Self].error("error: '\(error.localizedDescription)'")
             }
         }
     }

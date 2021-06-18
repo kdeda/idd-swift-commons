@@ -15,7 +15,7 @@ extension FileManager {
     private static var registerForWorkSpaceNotifications = false
 
     static let logger: Logger = {
-        return IDDLog4swift.getLogger("FileManager")
+        return Log4swift.getLogger("FileManager")
     }()
 
     /**
@@ -74,9 +74,12 @@ extension FileManager {
         let rv = inaccessibleURLs.isEmpty
         
         Self.logger.info("homeDirectory: '\(homeDirectory.path)' hasFullDiskAccess: '\(rv)'")
-        if !rv && Self.logger.isDebug {
-            let inaccessiblePaths = inaccessibleURLs.map { $0.path }
-            Self.logger.debug("homeDirectory: '\(homeDirectory.path)' hasFullDiskAccess: '\(rv)' cantAccess: '\(inaccessiblePaths)'")
+        // if !rv && Self.logger.isDebug {
+        if !rv {
+            let inaccessiblePaths = inaccessibleURLs
+                .map(\.path)
+                .joined(separator: "',\n\t'")
+            Self.logger.info("homeDirectory: '\(homeDirectory.path)' hasFullDiskAccess: '\(rv)' cantAccess: \n\t'\(inaccessiblePaths)'")
         }
         return rv
     }

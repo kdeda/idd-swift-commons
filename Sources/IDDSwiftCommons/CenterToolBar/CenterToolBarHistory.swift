@@ -34,7 +34,7 @@ public class CenterToolBarHistory {
     public static let maxCount = 50
     
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
     
     // MARK: - Class methods
@@ -105,7 +105,7 @@ public class CenterToolBarHistory {
 
 extension IDDUserDefaults {
     static var logger: Logger = {
-        return IDDLog4swift.getLogger("IDDUserDefaults")
+        return Log4swift.getLogger("IDDUserDefaults")
     }()
 
     /**

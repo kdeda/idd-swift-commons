@@ -11,7 +11,7 @@ import Log4swift
 
 open class IDDView: NSView {    
     public lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
     
     @IBOutlet open var contentView: NSView!

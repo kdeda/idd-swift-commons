@@ -11,7 +11,7 @@ import Log4swift
 
 public extension NSView {
     static let logger: Logger = {
-        return IDDLog4swift.getLogger("NSView")
+        return Log4swift.getLogger("NSView")
     }()
     
     func swiftPinToSuperViewSize(_ constant: CGFloat) {

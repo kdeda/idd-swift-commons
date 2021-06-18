@@ -13,7 +13,7 @@ extension NSAlert {
     static var waitingForUserToOK = 0
     static var popovers = [NSButton: NSPopover]()
     static let logger: Logger = {
-        return IDDLog4swift.getLogger("NSAlert")
+        return Log4swift.getLogger("NSAlert")
     }()
     
     @objc static private func _popoverCompleted(_ sender: Any) {

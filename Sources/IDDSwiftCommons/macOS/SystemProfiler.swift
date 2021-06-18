@@ -13,7 +13,7 @@ public struct SystemProfiler {
     public static let shared = SystemProfiler()
     public static let profilerPath = "/usr/sbin/system_profiler"
     public static let logger: Logger = {
-        return IDDLog4swift.getLogger("SystemProfiler")
+        return Log4swift.getLogger("SystemProfiler")
     }()
 
     public var storageData: [SystemProfiler.StorageData] {

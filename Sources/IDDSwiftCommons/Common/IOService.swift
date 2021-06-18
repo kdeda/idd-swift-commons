@@ -11,7 +11,7 @@ import Log4swift
 
 public struct IOService {
     static var logger: Logger = {
-        return IDDLog4swift.getLogger("IOService")
+        return Log4swift.getLogger("IOService")
     }()
 
     public static func test() {

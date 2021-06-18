@@ -11,7 +11,7 @@ import Log4swift
 
 extension NSWorkspace {
     public static let logger: Logger = {
-        return IDDLog4swift.getLogger("NSWorkSpace")
+        return Log4swift.getLogger("NSWorkSpace")
     }()
 
     private static var _notifyAbout_DS_Store_Files = true

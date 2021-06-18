@@ -32,7 +32,7 @@ public class CenterToolBarItem: NSToolbarItem {
 
 public class CenterToolBarViewController: NSViewController {
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
 
     static let outsideMargin = CGFloat(20.0)

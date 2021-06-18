@@ -39,7 +39,7 @@ public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate,
     }()
 
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
     
     public let methodName: String

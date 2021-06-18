@@ -15,7 +15,7 @@ public protocol TitlebarAccessoryWindowDelegate : NSWindowDelegate {
 
 extension NSWindow: TitlebarAccessoryViewDelegate {
     static let logger: Logger = {
-        return IDDLog4swift.getLogger("NSWindow")
+        return Log4swift.getLogger("NSWindow")
     }()
     
     var heightOfTitleBar: CGFloat {

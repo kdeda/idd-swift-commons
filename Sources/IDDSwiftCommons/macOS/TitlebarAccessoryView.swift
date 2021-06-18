@@ -15,7 +15,7 @@ import Log4swift
 
 public class TitlebarAccessoryView: NSView {
     lazy var logger: Logger = {
-        return IDDLog4swift.getLogger(self)
+        return Log4swift.getLogger(self)
     }()
 
     var tracking: NSView.TrackingRectTag = 0
