@@ -18,7 +18,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(name: "Log4swift", url: "https://github.com/kdeda/log4swift.git", from: "1.0.4"),
+        .package(name: "Log4swift", url: "https://github.com/kdeda/log4swift.git", from: "1.0.5"),
         .package(name: "IDDObjectiveCLegacy", url: "https://github.com/kdeda/idd-objective-c-legacy.git", from: "1.0.5"),
         .package(name: "ZSTDSwift", url: "https://github.com/kdeda/zstd-swift.git", from: "1.0.4"),
     ],
