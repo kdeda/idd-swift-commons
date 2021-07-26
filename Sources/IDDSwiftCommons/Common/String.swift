@@ -243,8 +243,12 @@ extension String {
      returns a unique fingerprint
      ie: 2E79D73C-EAB5-44E0-9DEC-75602872402E
      */
-    var md5: String {
+    public var md5: String {
         return (data(using: .utf8) ?? Data()).md5
+    }
+    
+    public var isNotEmpty: Bool {
+        !isEmpty
     }
 }
 
