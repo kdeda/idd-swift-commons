@@ -14,34 +14,46 @@ extension NSWorkspace {
         return Log4swift.getLogger("NSWorkSpace")
     }()
 
-    private static var _notifyAbout_DS_Store_Files = true
+    private static var notifyAbout_DS_Store_Files_once = true
     // https://apple.stackexchange.com/questions/299138/show-hidden-files-files-in-finder-except-ds-store/300210#300210
     //
 
     // MARK: - Class methods
     // MARK: -
-
+    
+    private static var _majorOSVersion: Int = -1
     private static var _minorOSVersion: Int = -1
-    public static var minorOSVersion: Int = {
-        if _minorOSVersion == -1 {
-            if let versionInfo = NSDictionary.init(contentsOfFile: "/System/Library/CoreServices/SystemVersion.plist") {
-                if let productVersion = versionInfo["ProductVersion"] as? String {
-                    var tokens = productVersion.components(separatedBy: ".")
-                    
-                    while tokens.count > 2 {
-                        tokens.removeLast()
-                    }
-                    if tokens.count == 2 {
-                        if let version = Int(tokens[1]) {
-                            _minorOSVersion = version
-                        }
-                    }
+    
+    private static func updateVersions() {
+        if let versionInfo = NSDictionary.init(contentsOfFile: "/System/Library/CoreServices/SystemVersion.plist") {
+            if let productVersion = versionInfo["ProductVersion"] as? String {
+                var tokens = productVersion.components(separatedBy: ".")
+                
+                while tokens.count > 2 {
+                    tokens.removeLast()
+                }
+                if tokens.count == 2 {
+                    _majorOSVersion = Int(tokens[0]) ?? 0
+                    _minorOSVersion = Int(tokens[1]) ?? 0
                 }
             }
         }
+    }
+    
+    public static var majorOSVersion: Int = {
+        if _majorOSVersion == -1 {
+            updateVersions()
+        }
+        return _majorOSVersion
+    }()
+
+    public static var minorOSVersion: Int = {
+        if _minorOSVersion == -1 {
+            updateVersions()
+        }
         return _minorOSVersion
     }()
-    
+
     // MARK: - Private methods
     // MARK: -
 
@@ -133,17 +145,19 @@ extension NSWorkspace {
         NSWorkspace.logger.info("path: '\(pathURL.path)'")
         
         if pathURL.path.hasSuffix(".DS_Store") {
-            if NSWorkspace.minorOSVersion >= 12 && NSWorkspace._notifyAbout_DS_Store_Files {
-                NSWorkspace._notifyAbout_DS_Store_Files = false
-                
-                NSAlert.attachAlert(
-                    withStyle: .warning,
-                    message: "Warning".localized,
-                    informative: "Unfortunately Apple has configured Finder to never show .DS_Store files.\n".localized,
-                    buttons: ["OK".localized],
-                    toWindow: window
-                ) { _ in }
-                return
+            if (NSWorkspace.majorOSVersion == 10 && NSWorkspace.minorOSVersion >= 12) || (NSWorkspace.majorOSVersion == 11) {
+                if Self.notifyAbout_DS_Store_Files_once {
+                    Self.notifyAbout_DS_Store_Files_once = false
+                    
+                    NSAlert.attachAlert(
+                        withStyle: .warning,
+                        message: "Warning".localized,
+                        informative: "Unfortunately Apple has configured Finder to never show .DS_Store files.\n".localized,
+                        buttons: ["OK".localized],
+                        toWindow: window
+                    ) { _ in }
+                    return
+                }
             }
         }
     
