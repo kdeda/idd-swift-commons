@@ -23,20 +23,30 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
         self.defaultValue = defaultValue
     }
     
-    // if the value is nil return defaultValue
-    // if the value empty return defaultValue
-    // otherwise return the value
-    //
+    /**
+     if the value is nil return defaultValue
+     if the value is an empty string return defaultValue
+     otherwise return the value
+     
+     to avoid collisions with the old user default code we will attempt to read from the "$key.json"
+     and write to "$key.json"
+     as we write to "$key.json" we will also remove the old default at "$key"
+     */
     public var wrappedValue: Value {
         get {
-            let storedValue = storage.value(forKey: key) as? String
-            let encoder = JSONDecoder()
-            
-            encoder.dateDecodingStrategy = .iso8601
-            // Log4swift[Self].info("loaded raw value \(self.key): '\(storedValue ?? "unknown ...")'")
-            let data = storedValue?.data(using: .utf8) ?? Data()
-            let value = try? encoder.decode(Value.self, from: data)
-            if let stringValue = value as? String, stringValue.isEmpty {
+            let value: Value? = {
+                guard let storedValue = storage.value(forKey: key.jsonKey) as? String
+                else { return storage.value(forKey: key) as? Value }
+                let encoder = JSONDecoder()
+                
+                encoder.dateDecodingStrategy = .iso8601
+                // Log4swift[Self].info("loaded raw value \(self.key): '\(storedValue ?? "unknown ...")'")
+                let data = storedValue.data(using: .utf8) ?? Data()
+                return try? encoder.decode(Value.self, from: data)
+            }()
+                
+            if let stringValue = value as? String,
+               stringValue.isEmpty {
                 // for string values we want to equate nil with empty string as well
                 return defaultValue
             }
@@ -52,12 +62,19 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
                 let data = try encoder.encode(newValue)
                 let storedValue = String(data: data, encoding: .utf8) ?? ""
                 
-                storage.setValue(storedValue, forKey: key)
+                storage.setValue(storedValue, forKey: key.jsonKey)
+                storage.removeObject(forKey: key)
                 // Log4swift[Self].info("stored \(self.key): '\(storedValue)'")
             } catch {
                 Log4swift[Self].error("error: '\(error.localizedDescription)'")
             }
         }
+    }
+}
+
+fileprivate extension String {
+    var jsonKey: String {
+        self + ".json"
     }
 }
 
