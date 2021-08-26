@@ -1,8 +1,9 @@
 //
-//  File.swift
-//  
+//  Process+Extensions.swift
+//  IDDSwiftCommons
 //
 //  Created by Klajd Deda on 8/24/21.
+//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
 //
 
 import Foundation
@@ -52,7 +53,7 @@ public extension Process {
     /// - Parameters:
     ///   - launchPath: Sets the receiver’s executable.
     ///   - arguments: Sets the command arguments that should be used to launch the executable.
-    convenience init(_ launchPath: String, _ arguments: [String]? = nil) {
+    convenience init(_ launchPath: String, _ arguments: [String] = []) {
         self.init()
         if #available(macOS 10.13, *) {
             self.executableURL = URL(fileURLWithPath: launchPath)
@@ -211,9 +212,21 @@ public extension Process {
      */
     static func fetchData(
         task: String,
-        arguments: [String]? = nil,
+        arguments: [String],
         timeOut timeOutInSeconds: Double = 0
     ) -> Result<ProcessData, ProcessError> {
         Process(task, arguments).fetchData(timeOut: timeOutInSeconds)
+    }
+
+    static func fetchString(
+        task: String,
+        arguments: [String],
+        timeOut timeOutInSeconds: Double = 0
+    ) -> String {
+        let result = Process(task, arguments)
+            .fetchData(timeOut: timeOutInSeconds)
+            .map { $0.outputString }
+        
+        return (try? result.get()) ?? ""
     }
 }
