@@ -18,8 +18,7 @@ extension NSWorkspace {
     // https://apple.stackexchange.com/questions/299138/show-hidden-files-files-in-finder-except-ds-store/300210#300210
     //
 
-    // MARK: - Class methods
-    // MARK: -
+    // MARK: - Class methods -
     
     private static var _majorOSVersion: Int = -1
     private static var _minorOSVersion: Int = -1
@@ -54,8 +53,7 @@ extension NSWorkspace {
         return _minorOSVersion
     }()
 
-    // MARK: - Private methods
-    // MARK: -
+    // MARK: - Private methods -
 
     private var _showHiddenFilesInFinder: Bool {
         if let defaults = UserDefaults.standard.persistentDomain(forName: "com.apple.finder") {
@@ -66,49 +64,7 @@ extension NSWorkspace {
         return false
     }
 
-    // MARK: - Instance methods
-    // MARK: -
-
-    public func killPID(_ pid: Int32) {
-        if (pid > 0) {
-            let task = Process.init()
-            
-            task.launchPath = "/bin/kill"
-            task.arguments = ["-9", "\(pid)"]
-            task.launch()
-            task.waitUntilExit()
-            NSWorkspace.logger.info("killed: '\(pid)' withStatus: '\(task.terminationStatus)'")
-            task.terminate()
-        }
-    }
-
-    public func terminate(_ bundleIdentifiers: [String]) {
-        // kill the other instance first
-        //
-        self.runningApplications.forEach { (runningApplication) in
-            if let runningBundleIdentifier = runningApplication.bundleIdentifier {
-                NSWorkspace.logger.debug("found: '\(runningBundleIdentifier).\(runningApplication.processIdentifier)'")
-                
-                if bundleIdentifiers.contains(runningBundleIdentifier) {
-                    let runningProcessIdentifier = runningApplication.processIdentifier
-                    
-                    // we found one to kill
-                    //
-                    if runningProcessIdentifier != ProcessInfo.processInfo.processIdentifier {
-                        // don't kill us
-                        //
-                        NSWorkspace.logger.info("terminate: '\(runningBundleIdentifier).\(runningProcessIdentifier)'")
-                        runningApplication.terminate()
-                        Thread.sleep(forTimeInterval: 1.0)
-                        // fucking die bitch,
-                        // apple seems to fail to terminate often
-                        //
-                        self.killPID(runningProcessIdentifier)
-                    }
-                }
-            }
-        }
-    }
+    // MARK: - Instance methods -
     
     public var showHiddenFilesInFinder: Bool {
         get {
@@ -122,7 +78,7 @@ extension NSWorkspace {
                     UserDefaults.standard.synchronize()
                     // reboot Finder
                     //
-                    Process.string(fromTask: "/usr/bin/killall", arguments: ["Finder"])
+                    _ = Process.fetchString(task: "/usr/bin/killall", arguments: ["Finder"])
                 }
             }
         }
@@ -202,6 +158,42 @@ extension NSWorkspace {
             NSWorkspace.logger.error("Could not select: '\(pathURL.path)'")
         }
     }
+}
 
+extension Process {
+    public static func killProcess(pid: Int) {
+        guard pid > 0
+        else {
+            Log4swift[Self].error("pid: '\(pid)' should be a positive number")
+            return
+        }
+        _ = Self.fetchString(task: "/bin/kill", arguments: ["-9", "\(pid)"])
+    }
+    
+    public static func killProcess(bundleIdentifiers: [String]) {
+        bundleIdentifiers.forEach(Self.killProcess(bundleIdentifier:))
+    }
+
+    public static func killProcess(bundleIdentifier: String) {
+        NSWorkspace.shared.runningApplications.forEach { (runningApplication) in
+            if let runningBundleIdentifier = runningApplication.bundleIdentifier,
+               runningBundleIdentifier == bundleIdentifier {
+                let runningProcessIdentifier = runningApplication.processIdentifier
+                
+                if runningProcessIdentifier != ProcessInfo.processInfo.processIdentifier {
+                    // don't kill ourselves
+                    //
+                    NSWorkspace.logger.info("terminate: '\(runningBundleIdentifier).\(runningProcessIdentifier)'")
+                    runningApplication.terminate()
+                    // give it a second to respond
+                    Thread.sleep(forTimeInterval: 1.0)
+                    // apple will fail to terminate if said app asks you to save data or something
+                    // we don't really care at this poing and will force kill it
+                    //
+                    Self.killProcess(pid: Int(runningProcessIdentifier))
+                }
+            }
+        }
+    }
 }
 

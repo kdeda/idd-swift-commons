@@ -195,7 +195,6 @@ public extension Process {
 //        while ((buffer = [[task.standardError fileHandleForReading] availableData]) && [buffer length]) {
 //            [errorData appendData:buffer];
 //        }
-//
 //        while ((buffer = [[task.standardOutput fileHandleForReading] availableData]) && [buffer length]) {
 //            [rv appendData:buffer];
 //        }

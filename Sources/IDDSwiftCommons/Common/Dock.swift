@@ -64,7 +64,7 @@ public class Dock {
                     
                     UserDefaults.standard.setPersistentDomain(domain, forName: Dock.bundleIdentifier)
                     UserDefaults.standard.synchronize()
-                    NSWorkspace.shared.terminate([Dock.bundleIdentifier])
+                    Process.killProcess(bundleIdentifier: Dock.bundleIdentifier)
                 }
             }
         }
