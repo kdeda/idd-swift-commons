@@ -24,7 +24,7 @@ extension Date {
     // positive number if some time has elapsed since now
     //
     public var elapsedTimeInMilliseconds: Double {
-        return -self.timeIntervalSinceNow * 1000.0
+        -self.timeIntervalSinceNow * 1000.0
     }
     
     // positive number if some time has elapsed since now
@@ -43,21 +43,21 @@ extension Date {
     }
 
     public var stringWithDefaultFormat: String {
-        return Date.defaultFormatter.string(from: self)
+        Date.defaultFormatter.string(from: self)
     }
     
     // if numberOfDays is positive return date is us but numberOfDays in the future
     // if numberOfDays is negative return date is us but numberOfDays in the past
     //
     public func date(shiftedByDays numberOfDays: Int) -> Date {
-        return Date.init(timeInterval: Double(numberOfDays * 24 * 3600), since: self)
+        Date(timeInterval: Double(numberOfDays * 24 * 3600), since: self)
     }
 }
 
 extension String {
     
     public var dateWithDefaultFormat: Date? {
-        return Date.defaultFormatter.date(from: self)
+        Date.defaultFormatter.date(from: self)
     }
 }
 

@@ -12,10 +12,19 @@
 import Foundation
 import Log4swift
 
+/**
+ Convenience type to implement a PropertyWrapper
+ I will note that even this code is simple it has been really hard to use it clear it from buggs.
+ It promotes a strange situation.
+ 
+ defaults read ~/Library/Preferences/com.id-design.v8.whatsize.plist
+ */
 @propertyWrapper
 public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value: Codable {
     let key: String
     let defaultValue: Value
+    /// this maps to Bundle.main.bundleIdentifier, ie: 'com.id-design.v8.WhatSize'
+    /// defaults read ~/Library/Preferences/com.id-design.v8.whatsize.plist
     var storage: UserDefaults = .standard
 
     public init(key: String, defaultValue: Value) {
@@ -34,6 +43,7 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
      */
     public var wrappedValue: Value {
         get {
+            // Log4swift[Self.self].info("loading: '\(self.key)'")
             let value: Value? = {
                 guard let storedValue = storage.value(forKey: key.jsonKey) as? String
                 else { return storage.value(forKey: key) as? Value }
@@ -50,6 +60,7 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
                 // for string values we want to equate nil with empty string as well
                 return defaultValue
             }
+            // Log4swift[Self].info("loaded: '\(self.key)'")
             // Log4swift[Self].info("loaded \(self.key): '\(value ?? defaultValue)'")
             return value ?? defaultValue
         }
