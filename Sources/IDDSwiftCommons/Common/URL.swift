@@ -8,7 +8,7 @@
 
 import AppKit
 import Log4swift
-import IDDObjectiveCLegacy
+//import IDDObjectiveCLegacy
 
 extension URL {
     static public let logger: Logger = {
@@ -424,12 +424,6 @@ extension URL {
         return otherURL
     }
 
-    public var fetchFileContentMD5: String? {
-        // TODO
-        // this is hard c code fetching resource forks etc ...
-        return (self as NSURL).fetchMD5()
-    }
-    
     // these will fail for resource fork files ..
     //
     public var logicalSize: Int64 {

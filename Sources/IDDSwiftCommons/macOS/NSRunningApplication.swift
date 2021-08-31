@@ -7,7 +7,7 @@
 //
 
 import AppKit
-import IDDObjectiveCLegacy
+//import IDDObjectiveCLegacy
 
 public extension NSRunningApplication {
     
@@ -29,9 +29,9 @@ public extension NSRunningApplication {
         // https://github.com/mattgallagher/CwlUtils/blob/master/Sources/CwlUtils/CwlSysctl.swift
         // https://developer.apple.com/forums/thread/101874?answerId=309633022#309633022
         //
-        if Host.processArguments(processPID).count > 0 {
-            return true
-        }
+//        if Host.processArguments(processPID).count > 0 {
+//            return true
+//        }
         return false
     }
 

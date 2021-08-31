@@ -121,7 +121,7 @@ public extension Process {
                 }
                 logger.info("'\(taskDescription)' will be terminated immediately")
                 self.terminate()
-                Process.killPID(self.processIdentifier)
+                Process.killProcess(pid: Int(self.processIdentifier))
                 logger.info("'\(taskDescription)' should be terminated now.")
                 logger.info("'\(taskDescription)' self.isRunning: \(self.isRunning ? "YES" : "NO")")
             }

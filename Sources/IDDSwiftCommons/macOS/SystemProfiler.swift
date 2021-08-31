@@ -17,11 +17,8 @@ public struct SystemProfiler {
     }()
 
     public var storageData: [SystemProfiler.StorageData] {
-        guard let xml = Process.string(fromTask: SystemProfiler.profilerPath, arguments: ["-xml", "SPStorageDataType"], timeOut: 5.0),
-              !xml.isEmpty,
-              xml.range(of: "<iddError>", options: String.CompareOptions.caseInsensitive, range: nil, locale: nil) == nil
-        else { return [StorageData]() }
-                
+        let xml = Process.fetchString(task: SystemProfiler.profilerPath, arguments: ["-xml", "SPStorageDataType"], timeOut: 5.0)
+
         do {
             let decoder = PropertyListDecoder()
             let data = xml.data(using: .utf8) ?? Data()

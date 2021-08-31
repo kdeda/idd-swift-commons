@@ -1,5 +1,5 @@
 import XCTest
-@testable import IDDSwiftCommons
+@testable import IDDSwiftCommonsTests
 
 final class IDDSwiftCommonsTests: XCTestCase {
     func testExample() {
