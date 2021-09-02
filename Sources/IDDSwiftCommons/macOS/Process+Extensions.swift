@@ -95,7 +95,12 @@ public extension Process {
 
         guard FileManager.default.hasFullDiskAccess
         else {
-            logger.error("Please enableFullDisk access for this app'")
+            logger.error("""
+                    
+                        Please enableFullDisk access for this app
+                          Apple -> System Preferences -> Security & Privacy -> Full Disk Access
+                          and drop this path into it \(Bundle.main.executablePath ?? "executablePath should be defined")
+                    """)
             return .failure(.commandNotFound(command)) }
         guard URL(fileURLWithPath: command).fileExist
         else { return .failure(.commandNotFound(command)) }
