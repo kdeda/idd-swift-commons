@@ -15,11 +15,13 @@ extension URL {
         return Log4swift.getLogger("URL")
     }()
 
-    /*
-     * A URL identifying the user's home directory, typically in `/Users`.
-     * Calling `NSHomeDirectory()` from a sandboxed app will return an descendant of the app sandbox.
-     * This property on the other hand will return the actual home directory outside the sandbox.
-     * Note that access restrictions still apply, e.g. testing access to the returned URL will normally fail.
+    /**
+     A URL identifying the user's home directory, typically in `/Users`.
+     Calling `NSHomeDirectory()` from a sandboxed app will return an descendant of the app sandbox.
+     This property on the other hand will return the actual home directory outside the sandbox.
+     Note that access restrictions still apply, e.g. testing access to the returned URL will normally fail.
+     http://zpasternack.org/accessing-the-real-home-folder-from-a-sandboxed-app/
+     http://stackoverflow.com/questions/12153504/accessing-the-desktop-in-a-sandboxed-app
      */
     static public var iddHomeDirectory: URL = {
         if NSObject.isAppStoreBuild {
@@ -685,20 +687,18 @@ extension Array where Element == URL {
     }
     
     public var uniquePathURLs: [URL] {
-        var paths = Set<String>()
-        
-        self.forEach { (fileURL) in
-            // debug
-            // on slow machines we get into trouble here so we notify the UI about changes ...
-            // Thread.sleep(forTimeInterval: 0.001)
-            //
-            if let filePath = fileURL.path.removingPercentEncoding {
-                paths.insert(filePath)
-            } else {
-                URL.logger.error("bad URL: '\(fileURL)'")
+        self
+            .reduce(into: Set<String>()) { partialResult, fileURL in
+                // debug
+                // on slow machines we get into trouble here so we notify the UI about changes ...
+                // Thread.sleep(forTimeInterval: 0.001)
+                //
+                if let filePath = fileURL.path.removingPercentEncoding {
+                    partialResult.insert(filePath)
+                } else {
+                    URL.logger.error("bad URL: '\(fileURL)'")
+                }
             }
-        }
-        
-        return paths.map { URL.init(fileURLWithPath: $0) }
+            .map(URL.init(fileURLWithPath:))
     }
 }
