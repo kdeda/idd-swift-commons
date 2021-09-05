@@ -31,6 +31,7 @@ extension FileManager {
             }
             currentURL = parentURL
             rv.append(currentURL)
+            crawlup = currentURL.path != "/"
         } while crawlup
         return rv
     }
