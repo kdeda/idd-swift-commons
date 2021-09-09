@@ -15,19 +15,15 @@ import CryptoKit
 // MARK: -
 
 extension Data {
-    static public let logger: Logger = {
-        return Log4swift.getLogger("Data")
-    }()
-
     /**
-     I hate optionals
+     Optionals are not fun
      */
     public init(withURL url: URL) {
         do {
             try self.init(contentsOf: url)
         } catch {
             self.init()
-            Data.logger.error("error: '\(error.localizedDescription)' We will return empty data.")
+            Log4swift[Self].error("error: '\(error.localizedDescription)' We will return empty data.")
         }
     }
     
@@ -56,7 +52,7 @@ extension Data {
      returns a unique fingerprint
      ie: 2E79D73C-EAB5-44E0-9DEC-75602872402E
      */
-    var md5: String {
+    public var md5: String {
         if #available(macOS 10.15, *) {
             let digest = Insecure.MD5.hash(data: self)
             var tokens = digest.map { String(format: "%02hhx", $0) }
