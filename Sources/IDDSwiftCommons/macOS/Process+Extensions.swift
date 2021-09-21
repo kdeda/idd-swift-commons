@@ -11,9 +11,10 @@ import Log4swift
 
 public extension Process {
     enum ProcessError: Error {
-        case withError(Error)
+        case error(String)
         case stdError(String)
         case commandNotFound(String)
+        case fullDiskAccess
     }
     struct ProcessData {
         public var output = Data()
@@ -25,6 +26,25 @@ public extension Process {
         
         public var errorString: String {
             String(data: error, encoding: .utf8) ?? "unknown"
+        }
+        
+        public var allString: String {
+            let logger = Log4swift[Process]
+            let dictionary = [
+                "outputString": outputString,
+                "errorString": errorString
+            ]
+            let coder: JSONEncoder = {
+                let rv = JSONEncoder()
+                
+                rv.outputFormatting = .prettyPrinted
+                return rv
+            }()
+            let data = (try? coder.encode(dictionary)) ?? Data()
+            let string = String(data: data, encoding: .utf8) ?? ""
+            
+            logger.debug("\(string)")
+            return string
         }
         
 //        if ([errorData length]) {
@@ -95,13 +115,25 @@ public extension Process {
 
         guard FileManager.default.hasFullDiskAccess
         else {
-            logger.error("""
-                    
-                        Please enableFullDisk access for this app
-                          Apple -> System Preferences -> Security & Privacy -> Full Disk Access
-                          and drop this path into it \(Bundle.main.executablePath ?? "executablePath should be defined")
-                    """)
-            return .failure(.commandNotFound(command)) }
+            let executablePath = Bundle.main.executablePath ?? "executablePath should be defined"
+            /**
+             /usr/bin/codesign -vvv  /Users/kdeda/Library/Developer/Xcode/DerivedData/scripts-dfnvbbpqjqmrnoawwethnlsgeqvj/Build/Products/Debug/iddTools
+             */
+            logger.error(
+                """
+                
+                    --------------------------------
+                    Please enableFullDisk access for this app/tool
+                    Apple -> System Preferences -> Security & Privacy -> Full Disk Access
+                    and drop this path into it \(executablePath)
+                    Also make sure the binary is signed
+                
+                    /usr/bin/codesign --verbose --force --timestamp --options=runtime --strict --sign 'Developer ID Application: ID-DESIGN INC. (ME637H7ZM9)' \(executablePath)
+                    ----
+                
+                """
+            )
+            return .failure(.fullDiskAccess) }
         guard URL(fileURLWithPath: command).fileExist
         else { return .failure(.commandNotFound(command)) }
 
@@ -115,7 +147,7 @@ public extension Process {
 
         // if (IDDLogDebugLevel(self)) IDDLogDebug(self, _cmd, @"%@ \"%@\"", command, [arguments componentsJoinedByString:@"\" \""]);
         let taskDescription = "\(command + " " + (self.arguments ?? []).joined(separator: " "))"
-        logger.info("\(taskDescription)")
+        logger.debug("\(taskDescription)")
         if timeOutInSeconds > 0 {
             DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(Int(timeOutInSeconds * 1_000))) {
                 // this will capture us but that's ok
@@ -135,13 +167,13 @@ public extension Process {
         standardOutputPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
             logger.debug("appending stdOut: '\(data.count) bytes'")
-            logger.debug("appending stdOut: '\(String(data: data, encoding: .utf8) ?? "unknown") bytes'")
+            logger.debug("appending stdOut: '\(String(data: data, encoding: .utf8) ?? "unknown")'")
             processData.output.append(data)
         }
         standardErrorPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
             logger.debug("appending stdError: '\(data.count) bytes'")
-            logger.debug("appending stdError: '\(String(data: data, encoding: .utf8) ?? "unknown") bytes'")
+            logger.debug("appending stdError: '\(String(data: data, encoding: .utf8) ?? "unknown")'")
             processData.error.append(data)
         }
 
@@ -232,5 +264,13 @@ public extension Process {
             .map { $0.outputString }
         
         return (try? result.get()) ?? ""
+    }
+}
+
+public extension Result where Success == Process.ProcessData, Failure == Process.ProcessError {
+    func allString() -> Result<String, Process.ProcessError> {
+        flatMap { processData -> Result<String, Process.ProcessError> in
+            return .success(processData.allString)
+        }
     }
 }

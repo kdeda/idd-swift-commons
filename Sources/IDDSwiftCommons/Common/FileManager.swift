@@ -38,7 +38,7 @@ extension FileManager {
         return hasFullDiskAccess(forHomeDirectory: URL.iddHomeDirectory)
     }
 
-    // true if any of these files exist and are readable
+    // true if any of these files exist and are readable by the current app
     //
     public func hasFullDiskAccess(forHomeDirectory homeDirectory: URL) -> Bool {
         let userFiles = [
@@ -73,13 +73,14 @@ extension FileManager {
             .filter { !$0.isReadable }
         let rv = inaccessibleURLs.isEmpty
         
-        Self.logger.info("homeDirectory: '\(homeDirectory.path)' hasFullDiskAccess: '\(rv)'")
-        // if !rv && Self.logger.isDebug {
+        // Self.logger.info("process: '\(ProcessInfo.processInfo.processName)' homeDirectory: '\(homeDirectory.path)' hasFullDiskAccess: '\(rv)'")
         if !rv {
             let inaccessiblePaths = inaccessibleURLs
                 .map(\.path)
+                .prefix(4)
                 .joined(separator: "',\n\t'")
-            Self.logger.info("homeDirectory: '\(homeDirectory.path)' hasFullDiskAccess: '\(rv)' cantAccess: \n\t'\(inaccessiblePaths)'")
+            Self.logger.info("process: '\(ProcessInfo.processInfo.processName)' homeDirectory: '\(homeDirectory.path)' hasFullDiskAccess: '\(rv)'")
+            Self.logger.info("process: '\(ProcessInfo.processInfo.processName)' cantAccess: \n\t'\(inaccessiblePaths)'")
         }
         return rv
     }
