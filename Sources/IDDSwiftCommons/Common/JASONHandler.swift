@@ -26,7 +26,7 @@ enum JASONHandlerRequestType: Int {
     case uploadFileRequest = 5
 }
 
-public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDownloadDelegate {
+public class JASONHandler: NSObject {
     static public let DownloadProgressNotification = Notification.Name("JASONHandlerDownloadProgressNotification")
     static public let UploadProgressNotification = Notification.Name("JASONHandlerUploadProgressNotification")
     
@@ -132,12 +132,12 @@ public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate,
                 self._lastError = JSONHandlerError.http(methodName: self.methodName, statusCode: httpStatus.statusCode)
             } else {
                 self.logger.debug("request completed with: '\(data.count) bytes'")
-                do {
+//                do {
                     self._responseData = data
                     // self._lastResponse = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject
-                } catch let error as NSError {
-                    self._lastError = JSONHandlerError.json(methodName: self.methodName, data: data, error: error)
-                }
+//                } catch let error as NSError {
+//                    self._lastError = JSONHandlerError.json(methodName: self.methodName, data: data, error: error)
+//                }
             }
             self._semaphore.signal()
         }
@@ -250,7 +250,7 @@ public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate,
      Send json and receive binary
      */
     public func binaryRequest(withContext jsonObject: [String: Any?]) throws -> Data? {
-        let startDate = Date()
+//        let startDate = Date()
 
         _requestType = .binaryRequest
         // TODO
@@ -291,7 +291,7 @@ public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate,
      Send json and receive binary
      */
     public func download(withContext jsonObject: [String: Any]) throws -> AnyObject? {
-        let startDate = Date()
+//        let startDate = Date()
         
         _requestType = .downloadFileRequest
         // TODO
@@ -334,7 +334,7 @@ public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate,
      Send json and binary receive json
      */
     public func upload(fileItems items: [JSONUploadFileItem], withContext jsonObject: [String: Any]) throws -> AnyObject? {
-        let startDate = Date()
+//        let startDate = Date()
 
         _requestType = .uploadFileRequest
         // TODO
@@ -374,9 +374,14 @@ public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate,
 //        }
         return self._lastResponse
     }
-    
-    // MARK: - URLSession delegate
-    // MARK: -
+}
+
+// MARK: - JASONHandler (URLSessionDelegate) -
+extension JASONHandler: URLSessionDelegate {
+}
+
+// MARK: - JASONHandler (URLSessionTaskDelegate) -
+extension JASONHandler: URLSessionTaskDelegate {
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if error != nil {
@@ -416,19 +421,28 @@ public class JASONHandler: NSObject, URLSessionDelegate, URLSessionTaskDelegate,
         self.logger.debug("session: '\(session)' uploadProgress: '\(progress * 100)%.'")
     }
 
-    @nonobjc public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Swift.Void) {
+}
+
+// MARK: - JASONHandler (URLSessionDataDelegate) -
+extension JASONHandler: URLSessionDataDelegate {
+
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Swift.Void) {
         self.logger.info("session: '\(session)', received response: '\(response)'")
         
         completionHandler(.allow)
     }
     
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         _responseData.append(data)
     }
     
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, willCacheResponse proposedResponse: CachedURLResponse, completionHandler: @escaping (CachedURLResponse?) -> Swift.Void) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, willCacheResponse proposedResponse: CachedURLResponse, completionHandler: @escaping (CachedURLResponse?) -> Swift.Void) {
         self.logger.info("session: '\(session)', dataTask: '\(dataTask)'")
     }
+}
+
+// MARK: - JASONHandler (URLSessionDownloadDelegate) -
+extension JASONHandler: URLSessionDownloadDelegate {
 
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // self.logger.info("location: '\(location)'")

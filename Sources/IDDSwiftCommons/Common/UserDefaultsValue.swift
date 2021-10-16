@@ -50,7 +50,7 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
                 let encoder = JSONDecoder()
                 
                 encoder.dateDecodingStrategy = .iso8601
-                // Log4swift[Self].info("loaded raw value \(self.key): '\(storedValue ?? "unknown ...")'")
+                // Log4swift[Self.self].info("loaded raw value \(self.key): '\(storedValue ?? "unknown ...")'")
                 let data = storedValue.data(using: .utf8) ?? Data()
                 return try? encoder.decode(Value.self, from: data)
             }()
@@ -60,8 +60,8 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
                 // for string values we want to equate nil with empty string as well
                 return defaultValue
             }
-            // Log4swift[Self].info("loaded: '\(self.key)'")
-            // Log4swift[Self].info("loaded \(self.key): '\(value ?? defaultValue)'")
+            // Log4swift[Self.self].info("loaded: '\(self.key)'")
+            // Log4swift[Self.self].info("loaded \(self.key): '\(value ?? defaultValue)'")
             return value ?? defaultValue
         }
         set {
@@ -75,9 +75,9 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
                 
                 storage.setValue(storedValue, forKey: key.jsonKey)
                 storage.removeObject(forKey: key)
-                // Log4swift[Self].info("stored \(self.key): '\(storedValue)'")
+                // Log4swift[Self.self].info("stored \(self.key): '\(storedValue)'")
             } catch {
-                Log4swift[Self].error("error: '\(error.localizedDescription)'")
+                Log4swift[Self.self].error("error: '\(error.localizedDescription)'")
             }
         }
     }

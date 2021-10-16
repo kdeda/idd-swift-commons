@@ -164,7 +164,7 @@ extension Process {
     public static func killProcess(pid: Int) {
         guard pid > 0
         else {
-            Log4swift[Self].error("pid: '\(pid)' should be a positive number")
+            Log4swift[Self.self].error("pid: '\(pid)' should be a positive number")
             return
         }
         _ = Self.fetchString(task: "/bin/kill", arguments: ["-9", "\(pid)"])

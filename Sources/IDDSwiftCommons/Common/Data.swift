@@ -23,7 +23,7 @@ extension Data {
             try self.init(contentsOf: url)
         } catch {
             self.init()
-            Log4swift[Self].error("error: '\(error.localizedDescription)' We will return empty data.")
+            Log4swift[Self.self].error("error: '\(error.localizedDescription)' We will return empty data.")
         }
     }
     

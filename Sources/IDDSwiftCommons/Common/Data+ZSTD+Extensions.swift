@@ -25,18 +25,18 @@ extension Data {
         do {
             rv = try processor.compressBuffer(self, compressionLevel: 2)
         } catch ZSTDError.libraryError(let errStr) {
-            Log4swift[Self].error("Library error: \(errStr)")
+            Log4swift[Self.self].error("Library error: \(errStr)")
         } catch ZSTDError.invalidCompressionLevel(let lvl){
-            Log4swift[Self].error("Invalid compression level: \(lvl)")
+            Log4swift[Self.self].error("Invalid compression level: \(lvl)")
         } catch ZSTDError.decompressedSizeUnknown {
-            Log4swift[Self].error("Unknown decompressed size")
+            Log4swift[Self.self].error("Unknown decompressed size")
         } catch {
-            Log4swift[Self].error("Unknown error.")
+            Log4swift[Self.self].error("Unknown error.")
         }
         
         //let rv = self.compress(withAlgorithm: .lzfse) ?? Data()
         //let rv = (self as NSData).zlibCompressed() as Data
-        Log4swift[Self].info("in: '\(self.count.decimalFormatted)' out: '\(rv.count.decimalFormatted) bytes' in: '\(startDate.elapsedTime) ms'")
+        Log4swift[Self.self].info("in: '\(self.count.decimalFormatted)' out: '\(rv.count.decimalFormatted) bytes' in: '\(startDate.elapsedTime) ms'")
         return rv
     }
     
@@ -48,18 +48,18 @@ extension Data {
         do {
             rv = try processor.decompressFrame(self)
         } catch ZSTDError.libraryError(let errStr) {
-            Log4swift[Self].error("Library error: \(errStr)")
+            Log4swift[Self.self].error("Library error: \(errStr)")
         } catch ZSTDError.invalidCompressionLevel(let lvl){
-            Log4swift[Self].error("Invalid compression level: \(lvl)")
+            Log4swift[Self.self].error("Invalid compression level: \(lvl)")
         } catch ZSTDError.decompressedSizeUnknown {
-            Log4swift[Self].error("Unknown decompressed size")
+            Log4swift[Self.self].error("Unknown decompressed size")
         } catch {
-            Log4swift[Self].error("Unknown error.")
+            Log4swift[Self.self].error("Unknown error.")
         }
         
         //let rv = self.decompress(withAlgorithm: .lzfse) ?? Data()
         //let rv = (self as NSData).zlibUncompressed() as Data
-        Log4swift[Self].info("in: '\(self.count.decimalFormatted)' out: '\(rv.count.decimalFormatted) bytes' in: '\(startDate.elapsedTime) ms'")
+        Log4swift[Self.self].info("in: '\(self.count.decimalFormatted)' out: '\(rv.count.decimalFormatted) bytes' in: '\(startDate.elapsedTime) ms'")
         return rv
     }
 }

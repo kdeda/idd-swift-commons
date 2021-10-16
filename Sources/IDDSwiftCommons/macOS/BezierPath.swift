@@ -71,7 +71,7 @@ public extension BezierPath {
     }
     #endif
     
-    public convenience init(rect: CGRect, roundedCorners: Corners, cornerRadius: CGFloat) {
+    convenience init(rect: CGRect, roundedCorners: Corners, cornerRadius: CGFloat) {
         self.init()
         
         // On iOS & tvOS, we need to flip the corners

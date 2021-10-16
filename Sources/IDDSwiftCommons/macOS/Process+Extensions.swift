@@ -29,7 +29,7 @@ public extension Process {
         }
         
         public var allString: String {
-            let logger = Log4swift[Process]
+            let logger = Log4swift[Process.self]
             let dictionary = [
                 "outputString": outputString,
                 "errorString": errorString
@@ -111,7 +111,7 @@ public extension Process {
             }
             return self.launchPath ?? ""
         }()
-        let logger = Log4swift[Self]
+        let logger = Log4swift[Self.self]
 
         guard FileManager.default.hasFullDiskAccess
         else {
