@@ -149,8 +149,9 @@ public extension Process {
         let taskDescription = "\(command + " " + (self.arguments ?? []).joined(separator: " "))"
         logger.debug("\(taskDescription)")
         if timeOutInSeconds > 0 {
-            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(Int(timeOutInSeconds * 1_000))) {
-                // this will capture us but that's ok
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(Int(timeOutInSeconds * 1_000))) { [weak self] in
+                guard let self = self
+                else { return }
                 guard self.isRunning
                 else {
                     logger.info("'\(taskDescription)' is not running any longer")
