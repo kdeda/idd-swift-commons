@@ -139,6 +139,7 @@ public extension Process {
 
         let semaphore = DispatchSemaphore(value: 0)
         var processData = ProcessData()
+        let processDataLock = DispatchSemaphore(value: 1)
         let standardOutputPipe = Pipe()
         let standardErrorPipe = Pipe()
 
@@ -169,13 +170,17 @@ public extension Process {
             let data = file.availableData
             logger.debug("appending stdOut: '\(data.count) bytes'")
             logger.debug("appending stdOut: '\(String(data: data, encoding: .utf8) ?? "unknown")'")
+            processDataLock.wait()
             processData.output.append(data)
+            processDataLock.signal()
         }
         standardErrorPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
             logger.debug("appending stdError: '\(data.count) bytes'")
             logger.debug("appending stdError: '\(String(data: data, encoding: .utf8) ?? "unknown")'")
+            processDataLock.wait()
             processData.error.append(data)
+            processDataLock.signal()
         }
 
         self.terminationHandler = { (process: Process) in
