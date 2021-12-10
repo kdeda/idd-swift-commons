@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "IDDSwiftCommons",
+    name: "idd-swift-commons",
     platforms: [
         // .iOS(.v13),
         .macOS(.v10_12)
