@@ -3,7 +3,7 @@
 //  SwiftCommons
 //
 //  Created by Klajd Deda on 8/15/17.
-//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
 // create an instance of this class for each server request

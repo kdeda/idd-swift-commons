@@ -3,7 +3,7 @@
 //  SwiftCommons
 //
 //  Created by Klajd Deda on 9/25/17.
-//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
 import AppKit
@@ -150,7 +150,10 @@ extension FileManager {
             if let volumesArray = statfs, count > 0 {
                 return (0..<count).map { (index) -> String in
                     var volume = volumesArray[index]
-                    return charPointerToString(&volume.f_mntonname.0)
+                    let mountTo = charPointerToString(&volume.f_mntonname.0)
+                    //    let mountFrom = charPointerToString(&volume.f_mntfromname.0)
+                    //    let fileSystemType = charPointerToString(&volume.f_fstypename.0)
+                    return mountTo
                 }
                 .sorted(by: >)
             }
