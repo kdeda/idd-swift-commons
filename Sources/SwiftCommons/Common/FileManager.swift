@@ -6,8 +6,11 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+import Foundation
 import Log4swift
+#if os(macOS)
+import Cocoa
+#endif
 
 extension FileManager {
     private static var mountedVolumes = [String]()
@@ -101,12 +104,14 @@ extension FileManager {
     }
 
     private func registerForWorkSpaceNotifications() {
+#if os(macOS)
         guard !Self.registerForWorkSpaceNotifications
         else { return }
-
+        
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(self.didMountNotification(_:)), name: NSWorkspace.didMountNotification, object: nil)
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(self.didUnmountNotification(_:)), name: NSWorkspace.didUnmountNotification, object: nil)
         Self.registerForWorkSpaceNotifications = true
+#endif
     }
 
     @objc private func didMountNotification(_ notification: NSNotification) {

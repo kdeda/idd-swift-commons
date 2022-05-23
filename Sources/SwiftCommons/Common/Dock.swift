@@ -6,6 +6,8 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
+#if os(macOS)
+
 import AppKit
 import Log4swift
 
@@ -71,3 +73,5 @@ public class Dock {
         return false
     }
 }
+
+#endif

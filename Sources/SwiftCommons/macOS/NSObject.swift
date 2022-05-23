@@ -6,7 +6,7 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 extension NSObject {
     static public var isAppStoreBuild: Bool {

@@ -6,6 +6,8 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
+#if os(macOS)
+
 import Cocoa
 
 public extension NSGradient {
@@ -50,3 +52,5 @@ public extension NSGradient {
         return _hoverGradient!
     }
 }
+
+#endif

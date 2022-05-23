@@ -6,9 +6,11 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+import Foundation
 import Log4swift
-//import IDDObjectiveCLegacy
+#if os(macOS)
+import Cocoa
+#endif
 
 extension URL {
     static public let logger: Logger = {
@@ -52,8 +54,7 @@ extension URL {
     }()
     
     
-    // MARK: - Private methods
-    // MARK: -
+    // MARK: - Private methods -
     private func _volumeUUID(_ mountedVolumes: Set<String>) -> String {
         var realURL = self
         
@@ -118,8 +119,7 @@ extension URL {
         return rv
     }
 
-    // MARK: - Instance methods
-    // MARK: -    
+    // MARK: - Instance methods -
     public var fileExist: Bool {
         do {
             return try self.checkResourceIsReachable()
@@ -130,6 +130,7 @@ extension URL {
         return false
     }
 
+#if os(macOS)
     public var fileIcon: NSImage {
         let resourceValues = try? self.resourceValues(forKeys: [.effectiveIconKey])
         
@@ -138,6 +139,7 @@ extension URL {
         }
         return NSImage()
     }
+#endif
     
     public var isDirectory: Bool {
         return (try? self.resourceValues(forKeys: [.isDirectoryKey]))?
@@ -175,6 +177,7 @@ extension URL {
             .isVolume ?? false
     }
 
+#if os(macOS)
     public var fileSystemInfo: (fileSystemType: String, isRemovable: Bool) {
         var isLocalMount: Bool = false
         var isRemovable: ObjCBool = false
@@ -224,6 +227,7 @@ extension URL {
         URL.logger.info("path: '\(self.path)' isLocalMount: '\(isLocalMount)' isRemovable: '\(isRemovable)' isUnmountable: '\(isUnmountable)' isMobileBackups: '\(isMobileBackups)' isFuse: '\(isFuse)' description: '\(description ?? "unknown")' type: '\(type ?? "unknown")'")
         return (fileSystemType: fileSystemType, isRemovable: isRemovable.boolValue)
     }
+#endif
 
     public var volumeUUID: String {
         let mountedVolumes = Set(FileManager.default.mountedVolumes(true))
@@ -600,12 +604,14 @@ extension URL {
     public var mimeType: String? {
         let pathExtension = self.pathExtension
         
+#if os(macOS)
         if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as CFString, nil)?.takeRetainedValue() {
             if let rv = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
                 return rv as String
             }
         }
-        
+#endif
+
         return nil
     }
 
@@ -637,6 +643,7 @@ extension URL {
     }
 
     public func ejectVolume() -> Bool {
+#if os(macOS)
         do {
             try NSWorkspace.shared.unmountAndEjectDevice(at: self)
             return true
@@ -644,12 +651,12 @@ extension URL {
             URL.logger.error("error: '\(error)'")
             URL.logger.error("rootPath: '\(self.path)'")
         }
+#endif
         return false
     }
 }
 
-// MARK: - Array[URL]
-// MARK: -
+// MARK: - Array[URL] -
 extension Array where Element == URL {
     
     // will clean up backwards

@@ -33,8 +33,7 @@ public class IDDFlagValue: NSNumber {
     private var _stringValue: String = ""
     private var _number = NSNumber.init(value: 0)
 
-    // MARK: - Private methods
-    // MARK: -
+    // MARK: - Private methods -
 
     /*
      * the int represetation is used for bitwise filtering
@@ -67,16 +66,14 @@ public class IDDFlagValue: NSNumber {
         //    IDDLogError(self, _cmd, @"flag:'%ld'", (long)(buffer & [NSPredicate bitMaskForFlag:15]));
     }
 
-    // MARK: - Class methods
-    // MARK: -
+    // MARK: - Class methods -
 
     public static func string(withFlag flagIndex: Int) -> String {
         let rv = "".createIDDFlag(withLength: 32)
         return rv.setFlag(atIndex: flagIndex, to: true)
     }
 
-    // MARK: - Overriden methods
-    // MARK: -
+    // MARK: - Overriden methods -
     
     convenience public init(withString value: String, andLength length: Int) {
         self.init()
@@ -155,8 +152,7 @@ public class IDDFlagValue: NSNumber {
         return "<\(String(describing: type(of: self))).\(objectID) stringValue: '\(_stringValue)' integerValue: '\(_number)'>"
     }
     
-    // MARK: - Instance methods
-    // MARK: -
+    // MARK: - Instance methods -
 
     public func has(flagAtIndex index: Int) -> Bool {
         if _stringValue.count == 0 {
@@ -191,8 +187,7 @@ public class IDDFlagValue: NSNumber {
 
 }
 
-// MARK: - String (IDDFlagValue)
-// MARK: -
+// MARK: - String (IDDFlagValue) -
 
 extension String {
     // https://stackoverflow.com/questions/24092884/get-nth-character-of-a-string-in-swift-programming-language
@@ -234,8 +229,7 @@ extension String {
     }
 }
 
-// MARK: - NSString (IDDFlagValue)
-// MARK: -
+// MARK: - NSString (IDDFlagValue) -
 
 // glue to cocoa apps
 //

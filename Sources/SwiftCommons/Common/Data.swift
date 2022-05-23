@@ -11,8 +11,7 @@ import Log4swift
 import CommonCrypto
 import CryptoKit
 
-// MARK: - Data
-// MARK: -
+// MARK: - Data -
 
 extension Data {
     /**

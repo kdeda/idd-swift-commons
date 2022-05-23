@@ -6,7 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+
+import Cocoa
 import Log4swift
 
 public extension NSImage {
@@ -42,5 +44,6 @@ public extension NSImage {
         rv.unlockFocus()
         return rv
     }
-
 }
+
+#endif

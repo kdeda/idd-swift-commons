@@ -6,7 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+
+import Cocoa
 
 public extension NSApplication {
     static let AppearanceDidChange = NSNotification.Name("NSApplication_AppearanceDidChange")
@@ -59,3 +61,4 @@ public extension NSApplication {
     }
 }
 
+#endif

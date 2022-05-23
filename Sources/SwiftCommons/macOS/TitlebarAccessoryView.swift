@@ -6,7 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+
+import Cocoa
 import Log4swift
 
 @objc public protocol TitlebarAccessoryViewDelegate: NSObjectProtocol {
@@ -21,8 +23,7 @@ public class TitlebarAccessoryView: NSView {
     var tracking: NSView.TrackingRectTag = 0
     weak var delegate: TitlebarAccessoryViewDelegate?
     
-    // MARK: - Overriden methods
-    // MARK: -
+    // MARK: - Overriden methods -
 
     override public var acceptsFirstResponder: Bool {
         get {
@@ -64,3 +65,5 @@ public class TitlebarAccessoryView: NSView {
         // super.mouseDown(with: event)
     }
 }
+
+#endif

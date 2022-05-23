@@ -6,6 +6,7 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
+#if os(macOS)
 import Foundation
 import Log4swift
 
@@ -280,3 +281,5 @@ public extension Result where Success == Process.ProcessData, Failure == Process
         }
     }
 }
+
+#endif

@@ -6,12 +6,13 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
+#if os(macOS)
+
 import Cocoa
 
 extension URL {
 
-    // MARK: - AppStore Security bookmark
-    // MARK: -
+    // MARK: - AppStore Security bookmark -
 
     private var securityBookmarkKey: String {
         get {
@@ -71,8 +72,7 @@ extension URL {
     }
 
     
-    // MARK: - AppStore SecurityBookmark private
-    // MARK: -
+    // MARK: - AppStore SecurityBookmark private -
 
     /*
      * APPLE_STORE_BUILD
@@ -127,3 +127,5 @@ extension URL {
     }
 
 }
+
+#endif

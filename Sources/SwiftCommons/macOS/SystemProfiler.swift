@@ -6,6 +6,8 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
+#if os(macOS)
+
 import Foundation
 import Log4swift
 
@@ -275,3 +277,4 @@ extension SystemProfiler {
     }
 }
 
+#endif

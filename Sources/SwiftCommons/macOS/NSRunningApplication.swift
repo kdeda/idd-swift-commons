@@ -6,8 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
-//import IDDObjectiveCLegacy
+#if os(macOS)
+
+import Cocoa
 
 public extension NSRunningApplication {
     
@@ -34,5 +35,6 @@ public extension NSRunningApplication {
 //        }
         return false
     }
-
 }
+
+#endif

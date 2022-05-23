@@ -105,8 +105,7 @@ public class CoalescingQueue<Element> {
         }
     }
     
-    // MARK: - Instance methods
-    // MARK: -
+    // MARK: - Instance methods -
 
     public init(_ callBack: @escaping CoalescingQueueAction) {
         self._callback = callBack

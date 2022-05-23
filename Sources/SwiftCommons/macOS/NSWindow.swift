@@ -6,7 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+
+import Cocoa
 import Log4swift
 
 public protocol TitlebarAccessoryWindowDelegate : NSWindowDelegate {
@@ -65,8 +67,7 @@ extension NSWindow: TitlebarAccessoryViewDelegate {
     }
     
     
-    // MARK: - TitlebarAccessoryViewDelegate
-    // MARK: -
+    // MARK: - TitlebarAccessoryViewDelegate -
     
     public func accessoryViewActionAction(_ sender: TitlebarAccessoryView) {
         NSWindow.logger.info("click: '\(sender)'")
@@ -75,5 +76,6 @@ extension NSWindow: TitlebarAccessoryViewDelegate {
             delegate.windowAccessoryViewAction(sender)
         }
     }
-
 }
+
+#endif

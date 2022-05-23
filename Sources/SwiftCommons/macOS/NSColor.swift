@@ -6,7 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+
+import Cocoa
 
 public extension NSColor {
     
@@ -24,6 +26,6 @@ public extension NSColor {
         //
         return NSColor.init(red: 0.0/255.0, green: 154.0/255.0, blue: 255.0/255.0, alpha: 1.0)
     }
-
-
 }
+
+#endif

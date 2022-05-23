@@ -6,7 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+
+import Cocoa
 import Log4swift
 
 open class IDDView: NSView {    
@@ -16,8 +18,7 @@ open class IDDView: NSView {
     
     @IBOutlet open var contentView: NSView!
 
-    // MARK: - Overriden methods
-    // MARK: -
+    // MARK: - Overriden methods -
 
     public override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -29,8 +30,7 @@ open class IDDView: NSView {
         loadFromNib()
     }
 
-    // MARK: - Instance methods
-    // MARK: -
+    // MARK: - Instance methods -
 
     open func loadFromNib() {
         self.wantsLayer = true
@@ -50,3 +50,5 @@ open class IDDView: NSView {
         contentView.swiftPinToSuperViewSize()
     }
 }
+
+#endif

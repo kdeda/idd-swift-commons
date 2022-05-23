@@ -6,7 +6,8 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+import Cocoa
 import Log4swift
 
 extension NSWorkspace {
@@ -197,3 +198,4 @@ extension Process {
     }
 }
 
+#endif

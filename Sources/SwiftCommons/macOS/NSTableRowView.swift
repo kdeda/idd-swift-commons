@@ -6,12 +6,13 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
+#if os(macOS)
+
 import AppKit
 
 public extension NSTableRowView {
     
-    // MARK: - Instance methods
-    // MARK: -
+    // MARK: - Instance methods -
     
     var tableView: NSTableView? {
         if let tableView = self.superview?.superview as? NSTableView {
@@ -37,5 +38,6 @@ public extension NSTableRowView {
         }
         return nil
     }
-    
 }
+
+#endif

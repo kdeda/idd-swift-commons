@@ -6,7 +6,9 @@
 //  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+
+import Cocoa
 import Log4swift
 
 public extension NSView {
@@ -77,5 +79,6 @@ public extension NSView {
             self.centerYAnchor.constraint(equalTo: superview.centerYAnchor).isActive = true
         }
     }
-    
 }
+
+#endif
