@@ -1,3 +1,3 @@
 # IDDCommons
 
-A description of this package.
+Cool extensions to various apple's Foundation APIs.
