@@ -1,5 +1,5 @@
 import XCTest
-@testable import SwiftCommonsTests
+// @testable import SwiftCommonsTests
 
 final class SwiftCommonsTests: XCTestCase {
     func testExample() {

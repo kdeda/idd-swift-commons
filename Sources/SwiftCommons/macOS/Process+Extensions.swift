@@ -167,18 +167,30 @@ public extension Process {
             }
         }
         
+        /**
+         Encapsulate the logs or stdout/stderr from the child process in our logs.
+         This can come handy when doing verbose type work.
+         */
         standardOutputPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
-            logger.debug("appending stdOut: '\(data.count) bytes'")
-            logger.debug("appending stdOut: '\(String(data: data, encoding: .utf8) ?? "unknown")'")
+            let logMessage = (String(data: data, encoding: .utf8) ?? "unknown")
+                .trimmingCharacters(in: CharacterSet.controlCharacters)  // remove last new line
+
+            for currentAppender in logger.appenders {
+                currentAppender.performLog(logMessage, level: .Info, info: LogInfoDictionary())
+            }
             processDataLock.wait()
             processData.output.append(data)
             processDataLock.signal()
         }
         standardErrorPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
-            logger.debug("appending stdError: '\(data.count) bytes'")
-            logger.debug("appending stdError: '\(String(data: data, encoding: .utf8) ?? "unknown")'")
+            let logMessage = (String(data: data, encoding: .utf8) ?? "unknown")
+                .trimmingCharacters(in: CharacterSet.controlCharacters)  // remove last new line
+
+            for currentAppender in logger.appenders {
+                currentAppender.performLog(logMessage, level: .Error, info: LogInfoDictionary())
+            }
             processDataLock.wait()
             processData.error.append(data)
             processDataLock.signal()
@@ -191,20 +203,14 @@ public extension Process {
             semaphore.signal()
         }
 
-        if #available(macOS 10.13, *) {
-            do {
-                try self.run()
-                _ = semaphore.wait(timeout: .now() + .milliseconds(Int(timeOutInSeconds * 1_000)))
-                
-                // fix from https://github.com/lroathe/PipeTest/blob/master/PipeTest/main.m
-                // [task waitUntilExit]; // we don't do this or we would dead lock !!!
-            } catch {
-                logger.error("'\(taskDescription)' error: \(error)")
-            }
-        } else {
-            // deprecated ...
-            self.launch()
+        do {
+            try self.run()
             _ = semaphore.wait(timeout: .now() + .milliseconds(Int(timeOutInSeconds * 1_000)))
+            
+            // fix from https://github.com/lroathe/PipeTest/blob/master/PipeTest/main.m
+            // [task waitUntilExit]; // we don't do this or we would dead lock !!!
+        } catch {
+            logger.error("'\(taskDescription)' error: \(error)")
         }
         
         if self.isRunning {
@@ -236,12 +242,6 @@ public extension Process {
                 self.terminate()
             }
         }
-//        while ((buffer = [[task.standardError fileHandleForReading] availableData]) && [buffer length]) {
-//            [errorData appendData:buffer];
-//        }
-//        while ((buffer = [[task.standardOutput fileHandleForReading] availableData]) && [buffer length]) {
-//            [rv appendData:buffer];
-//        }
         
         standardOutputPipe.fileHandleForReading.closeFile()
         standardOutputPipe.fileHandleForWriting.closeFile()
