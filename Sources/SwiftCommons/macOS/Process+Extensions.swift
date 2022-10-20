@@ -47,40 +47,16 @@ public extension Process {
             logger.debug("\(string)")
             return string
         }
-        
-//        if ([errorData length]) {
-//            // this task failed, we should return nil and raise
-//            //
-//            NSString*  errorString = @"";
-//
-//            @try {
-//                errorString = [[NSString alloc] initWithData:errorData encoding:NSASCIIStringEncoding];
-//            } @catch (NSException* exception) {
-//                IDDLogError(self, _cmd, @"Exception: %@", [exception description]);
-//                IDDLogError(self, _cmd, @"(%@)", [exception backtrace]);
-//            }
-//
-//            NSString* separator = @"\n\t *iddError*   ";
-//            NSMutableArray* tokens = [[NSMutableArray alloc] initWithArray:[errorString componentsSeparatedByString:@"\n"]];
-//
-//            [tokens removeObject:@""];
-//            IDDLogError(self, _cmd, @"task: '%@' arguments: '%@' errors: %@%@", command, [arguments componentsJoinedByString:@", "], separator, [tokens componentsJoinedByString:separator]);
-//            *errors = errorData;
-//        }
     }
     
     /// Initalize a process with the command and some args.
     ///
     /// - Parameters:
-    ///   - launchPath: Sets the receiver’s executable.
+    ///   - launchURL: Sets the receiver’s executable.
     ///   - arguments: Sets the command arguments that should be used to launch the executable.
-    convenience init(_ launchPath: String, _ arguments: [String] = []) {
+    convenience init(_ launchURL: URL, _ arguments: [String] = []) {
         self.init()
-        if #available(macOS 10.13, *) {
-            self.executableURL = URL(fileURLWithPath: launchPath)
-        } else {
-            self.launchPath = launchPath
-        }
+        self.executableURL = launchURL
         self.arguments = arguments
         self.currentDirectoryPath = NSHomeDirectory()
         self.environment = {
@@ -106,12 +82,7 @@ public extension Process {
     func fetchData(
         timeOut timeOutInSeconds: Double = 0
     ) -> Result<ProcessData, ProcessError> {
-        let command: String = {
-            if #available(macOS 10.13, *) {
-                return self.executableURL?.path ?? ""
-            }
-            return self.launchPath ?? ""
-        }()
+        let command = self.executableURL?.path ?? ""
         let logger = Log4swift[Self.self]
 
         guard FileManager.default.hasFullDiskAccess
@@ -173,11 +144,16 @@ public extension Process {
          */
         standardOutputPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
-            let logMessage = (String(data: data, encoding: .utf8) ?? "unknown")
-                .trimmingCharacters(in: CharacterSet.controlCharacters)  // remove last new line
-
-            for currentAppender in logger.appenders {
-                currentAppender.performLog(logMessage, level: .Info, info: LogInfoDictionary())
+            
+            // easy peasy in debug mode we will be more verbose with child output
+            // otherwise it will be hidden but accumulated in the processData buffer
+            if logger.isDebug {
+                let logMessage = (String(data: data, encoding: .utf8) ?? "unknown")
+                    .trimmingCharacters(in: CharacterSet.controlCharacters)  // remove last new line
+                
+                for currentAppender in logger.appenders {
+                    currentAppender.performLog(logMessage, level: .Info, info: LogInfoDictionary())
+                }
             }
             processDataLock.wait()
             processData.output.append(data)
@@ -185,11 +161,16 @@ public extension Process {
         }
         standardErrorPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
-            let logMessage = (String(data: data, encoding: .utf8) ?? "unknown")
-                .trimmingCharacters(in: CharacterSet.controlCharacters)  // remove last new line
-
-            for currentAppender in logger.appenders {
-                currentAppender.performLog(logMessage, level: .Error, info: LogInfoDictionary())
+            
+            // easy peasy in debug mode we will be more verbose with child output
+            // otherwise it will be hidden but accumulated in the processData buffer
+            if logger.isDebug {
+                let logMessage = (String(data: data, encoding: .utf8) ?? "unknown")
+                    .trimmingCharacters(in: CharacterSet.controlCharacters)  // remove last new line
+                
+                for currentAppender in logger.appenders {
+                    currentAppender.performLog(logMessage, level: .Error, info: LogInfoDictionary())
+                }
             }
             processDataLock.wait()
             processData.error.append(data)
@@ -254,19 +235,21 @@ public extension Process {
      Convenience
      */
     static func fetchData(
-        task: String,
+        taskURL: URL,
         arguments: [String],
         timeOut timeOutInSeconds: Double = 0
     ) -> Result<ProcessData, ProcessError> {
-        Process(task, arguments).fetchData(timeOut: timeOutInSeconds)
+        Process(taskURL, arguments).fetchData(timeOut: timeOutInSeconds)
     }
 
     static func fetchString(
-        task: String,
+        taskURL: URL,
         arguments: [String],
         timeOut timeOutInSeconds: Double = 0
     ) -> String {
-        let result = Process(task, arguments)
+        Log4swift[Self.self].info("\(taskURL.path) \(arguments.joined(separator: " "))")
+
+        let result = Process(taskURL, arguments)
             .fetchData(timeOut: timeOutInSeconds)
             .map { $0.outputString }
         
