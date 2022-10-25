@@ -93,12 +93,14 @@ public extension Process {
              */
             logger.error(
                 """
-                
+
                     --------------------------------
-                    Please enableFullDisk access for this app/tool
-                    Apple -> System Preferences -> Security & Privacy -> Full Disk Access
-                    and drop this path into it \(executablePath)
-                    Also make sure the binary is signed
+                    Please enable Full Disk Access for this app/tool
+                    open x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles
+                    open \(Bundle.main.executableURL!.deletingLastPathComponent().path)
+                    and add  \(Bundle.main.executableURL!.lastPathComponent)  to the list of allowed binaries"
+                
+                    to avoid problems, make sure the binary is signed
                 
                     /usr/bin/codesign --verbose --force --timestamp --options=runtime --strict --sign 'Developer ID Application: ID-DESIGN INC. (ME637H7ZM9)' \(executablePath)
                     ----
