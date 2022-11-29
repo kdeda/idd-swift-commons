@@ -190,11 +190,11 @@ extension URL {
         var fileSystemType = "unknown"
 
         _ = NSWorkspace.shared.getFileSystemInfo(forPath: self.path,
-                                             isRemovable: &isRemovable,
-                                             isWritable: &isWritable,
-                                             isUnmountable: &isUnmountable,
-                                             description: &description,
-                                             type: &type)
+                                                 isRemovable: &isRemovable,
+                                                 isWritable: &isWritable,
+                                                 isUnmountable: &isUnmountable,
+                                                 description: &description,
+                                                 type: &type)
         if let fsType = type {
             fileSystemType = (fsType as String).lowercased()
             
@@ -285,7 +285,7 @@ extension URL {
             URL.logger.info("volumeTrash: '\(path)'")
             return true
         }
-    
+
         if let index = pathComponents.firstIndex(of: ".Trash") {
             let userName = pathComponents[index - 1]
             let userHome = NSHomeDirectoryForUser(userName) ?? "/User/UnknownUserHome"
@@ -304,7 +304,7 @@ extension URL {
     public func uniqueTrashURL(at sourceURL: URL) -> URL {
         let fileName = sourceURL.lastPathComponent
         var rv = self.appendingPathComponent(fileName)
-    
+
         if rv.fileExist {
             var stillWorking = true
             let pathExtension = (fileName as NSString).pathExtension
@@ -348,7 +348,7 @@ extension URL {
     //
     private var _fetchInodeUsingStat: UInt64 {
         var fileStat : stat = stat()
-    
+
         if stat((self.path as NSString).fileSystemRepresentation, &fileStat) != 0 {
             let errorString = String(utf8String: strerror(errno)) ?? "Unknown error code"
             
@@ -483,9 +483,9 @@ extension URL {
             newAttributes_[FileAttributeKey.posixPermissions] = self.isDirectory ? 0o777 : 0o666
             URL.logger.info("modifiedAttributes: '\(newAttributes_)'")
             URL.logger.info("path: '\(self.path)'")
-//            if URL.logger.isDebug {
-//                URL.logger.info("path: '\(self.path)'")
-//            }
+            //            if URL.logger.isDebug {
+            //                URL.logger.info("path: '\(self.path)'")
+            //            }
             try FileManager.default.setAttributes(newAttributes_, ofItemAtPath: self.path)
             if recurseToChildren && self.isDirectory {
                 let children = try FileManager.default.contentsOfDirectory(
@@ -565,8 +565,8 @@ extension URL {
                 
                 let sizes = rows.compactMap { (row) -> Int64? in
                     guard let endOfLine = row.substring(after: "Space needed for this backup:"),
-                        let sizeString = endOfLine.substring(before: " (")
-                        else { return .none }
+                          let sizeString = endOfLine.substring(before: " (")
+                    else { return .none }
                     // Space needed for this backup: 293.11 GB (71559933 blocks of size 4096)
 
                     return _sizeFrom(backupLog: sizeString)
@@ -587,11 +587,11 @@ extension URL {
     public var isSystemLibraryCaches: Bool {
         return self.path == URL.systemLibraryCaches.path
     }
-    
+
     public func appendingQuery(withKey key: String, andValue value: String?) -> URL {
         guard var urlComponents = URLComponents(string: absoluteString),
-            let queryValue = value, queryValue.count > 0
-            else {return absoluteURL}
+              let queryValue = value, queryValue.count > 0
+        else {return absoluteURL}
 
         var queryItems: [URLQueryItem] = urlComponents.queryItems ??  []
         let queryItem = URLQueryItem(name: key, value: queryValue)
@@ -653,6 +653,50 @@ extension URL {
         }
 #endif
         return false
+    }
+
+    public var isRegularFile: Bool {
+        return (try? self.resourceValues(forKeys: [.isRegularFileKey]))?
+            .isRegularFile ?? false
+    }
+
+    public var isSymbolicLink: Bool {
+        return (try? self.resourceValues(forKeys: [.isSymbolicLinkKey]))?
+            .isSymbolicLink ?? false
+    }
+
+    public var linkCount: Int32 {
+        Int32((try? self.resourceValues(forKeys: [.linkCountKey]))?.linkCount ?? 0)
+    }
+
+    /**
+     Given a url with a lower case path, return a url with the proper canonical information.
+
+     For Example:
+     Given a lower case path '/volumes/case sensitive/screen shots'
+     In a volume with case sensitive paths.
+     Given that '/Volumes/Case Sensitive/screen shots' exists
+     We should get '/Volumes/Case Sensitive/screen shots'
+
+     OR:
+     Given that '/Volumes/Case Sensitive/Screen Shots' exists
+     We should get '/Volumes/Case Sensitive/Screen Shots'
+
+     In a volume with case in sensitive paths.
+     Given that '/Volumes/Case Sensitive/screen shots' exists
+     We should get '/Volumes/Case Sensitive/screen shots'
+
+     OR:
+     Given that '/Volumes/Case Sensitive/Screen Shots' exists
+     We should get '/Volumes/Case Sensitive/Screen Shots'
+     */
+    public var canonicalURL: URL {
+        let resourceValues = try? self.resourceValues(forKeys: [.canonicalPathKey])
+
+        if let canonicalPath = resourceValues?.canonicalPath as? String {
+            return URL(fileURLWithPath: canonicalPath)
+        }
+        return self
     }
 }
 

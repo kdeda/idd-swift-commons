@@ -241,7 +241,9 @@ public extension Process {
         arguments: [String],
         timeOut timeOutInSeconds: Double = 0
     ) -> Result<ProcessData, ProcessError> {
-        Process(taskURL, arguments).fetchData(timeOut: timeOutInSeconds)
+        Log4swift[Self.self].info("\(taskURL.path) \(arguments.joined(separator: " "))")
+
+        return Process(taskURL, arguments).fetchData(timeOut: timeOutInSeconds)
     }
 
     static func fetchString(
