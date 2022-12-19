@@ -27,11 +27,17 @@ public struct UserDefaultsValue<Value>: Equatable where Value: Equatable, Value:
     /// defaults read ~/Library/Preferences/com.id-design.v8.whatsize.plist
     var storage: UserDefaults = .standard
 
+    @available(macOS, deprecated: 1.3.7, message: "Use 'init(_ defaultValue: Value, forKey: String)', instead.")
     public init(key: String, defaultValue: Value) {
         self.key = key
         self.defaultValue = defaultValue
     }
-    
+
+    public init(_ defaultValue: Value, forKey: String) {
+        self.key = forKey
+        self.defaultValue = defaultValue
+    }
+
     /**
      if the value is nil return defaultValue
      if the value is an empty string return defaultValue
@@ -90,6 +96,6 @@ fileprivate extension String {
 }
 
 public extension UserDefaults {
-    @UserDefaultsValue(key: "pathPrefix", defaultValue: "")
+    @UserDefaultsValue("", forKey: "pathPrefix")
     static var pathPrefix: String
 }

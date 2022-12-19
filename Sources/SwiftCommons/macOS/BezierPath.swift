@@ -12,14 +12,14 @@ import Foundation
 import UIKit
 
 public typealias BezierPath = UIBezierPath
-public typealias View = UIView
+public typealias BezierView = UIView
 public typealias Color = UIColor
 
 #elseif os(macOS)
 import Cocoa
 
 public typealias BezierPath = NSBezierPath
-public typealias View = NSView
+public typealias BezierView = NSView
 public typealias Color = NSColor
 #endif
 

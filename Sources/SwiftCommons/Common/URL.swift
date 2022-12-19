@@ -698,6 +698,53 @@ extension URL {
         }
         return self
     }
+
+    public func createLock() {
+        do {
+            try "".write(to: self, atomically: true, encoding: .ascii)
+            URL.logger.info("created database lock: '\(self.path)'")
+        } catch {
+            URL.logger.error("failed to create database lock: '\(self.path)'")
+            URL.logger.error("error: '\(error)'")
+        }
+    }
+
+    public func removeLock() {
+        do {
+            try FileManager.default.removeItem(at: self)
+            URL.logger.info("removed database lock: '\(self.path)'")
+        } catch {
+            URL.logger.error("failed to remove database lock: '\(self.path)'")
+            URL.logger.error("error: '\(error)'")
+        }
+    }
+
+    public var hasLock: Bool {
+        self.fileExist
+    }
+
+    /**
+     Should very quickly append the data at the end of this url.
+     Of course this is not thread safe, but you can make it so using the createLock/removeLock
+     */
+    public func append(data: Data) {
+        let startDate = Date()
+
+        do {
+            if !self.fileExist {
+                // create an empty file
+                try Data().write(to: self)
+            }
+            let fileHandle = try FileHandle(forWritingTo: self)
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(data)
+            if startDate.elapsedTimeInMilliseconds > 10.0 {
+                URL.logger.info("appended: '\(data.count) bytes' to: '\(self.path)' in: '\(startDate.elapsedTime) ms'")
+            }
+        } catch {
+            URL.logger.error("error: '\(error.localizedDescription)'")
+        }
+    }
 }
 
 // MARK: - Array[URL] -

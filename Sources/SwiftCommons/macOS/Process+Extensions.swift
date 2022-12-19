@@ -113,7 +113,6 @@ public extension Process {
 
         let semaphore = DispatchSemaphore(value: 0)
         var processData = ProcessData()
-        let processDataLock = DispatchSemaphore(value: 1)
         let standardOutputPipe = Pipe()
         let standardErrorPipe = Pipe()
 
@@ -139,7 +138,7 @@ public extension Process {
                 logger.info("'\(taskDescription)' self.isRunning: \(self.isRunning ? "YES" : "NO")")
             }
         }
-        
+
         /**
          Encapsulate the logs or stdout/stderr from the child process in our logs.
          This can come handy when doing verbose type work.
@@ -157,9 +156,9 @@ public extension Process {
                     currentAppender.performLog(logMessage, level: .Info, info: LogInfoDictionary())
                 }
             }
-            processDataLock.wait()
+            objc_sync_enter(self)
             processData.output.append(data)
-            processDataLock.signal()
+            objc_sync_exit(self)
         }
         standardErrorPipe.fileHandleForReading.readabilityHandler = { (file: FileHandle) in
             let data = file.availableData
@@ -174,22 +173,25 @@ public extension Process {
                     currentAppender.performLog(logMessage, level: .Error, info: LogInfoDictionary())
                 }
             }
-            processDataLock.wait()
+            objc_sync_enter(self)
             processData.error.append(data)
-            processDataLock.signal()
+            objc_sync_exit(self)
         }
 
         self.terminationHandler = { (process: Process) in
+            // we are called on a completely different thread here
             standardOutputPipe.fileHandleForReading.readabilityHandler = nil
             standardErrorPipe.fileHandleForReading.readabilityHandler = nil
 
+            logger.info("command: '\(command)' terminated")
             semaphore.signal()
         }
 
         do {
             try self.run()
             _ = semaphore.wait(timeout: .now() + .milliseconds(Int(timeOutInSeconds * 1_000)))
-            
+            logger.info("command: '\(command)' ended")
+
             // fix from https://github.com/lroathe/PipeTest/blob/master/PipeTest/main.m
             // [task waitUntilExit]; // we don't do this or we would dead lock !!!
         } catch {
@@ -210,6 +212,7 @@ public extension Process {
             // if it takes longer than that kill it
             //
             
+            logger.info("command: '\(command)' waiting")
             logger.debug("Waiting for task '\(command)' to terminate")
             while self.isRunning
                     && waitForTermination < maxWait {
