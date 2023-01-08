@@ -38,7 +38,7 @@ extension FileManager {
     }
     
     public var hasFullDiskAccess: Bool {
-        return hasFullDiskAccess(forHomeDirectory: URL.iddHomeDirectory)
+        return hasFullDiskAccess(forHomeDirectory: URL.home)
     }
 
     // true if any of these files exist and are readable by the current app

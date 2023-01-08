@@ -13,8 +13,8 @@ public extension Bundle {
     
     static func with(appName appName_dot_app: String) -> Bundle? {
         let urls = [
-            URL.iddHomeDirectory.appendingPathComponent("Development/build/Release/"),
-            URL.iddHomeDirectory.appendingPathComponent("Development/build/Debug/")
+            URL.home.appendingPathComponent("Development/build/Release/"),
+            URL.home.appendingPathComponent("Development/build/Debug/")
         ]
         
         let bundles = urls.compactMap { Bundle.init(url: $0.appendingPathComponent(appName_dot_app)) }
@@ -67,7 +67,7 @@ public extension Bundle {
     }
     
     var isDevelopment: Bool {
-        let build = URL.iddHomeDirectory.appendingPathComponent("Development/build").path
+        let build = URL.home.appendingPathComponent("Development/build").path
         
         if let executableURL = self.executableURL {
             return executableURL.path.hasPrefix(build)

@@ -25,20 +25,20 @@ extension URL {
      http://zpasternack.org/accessing-the-real-home-folder-from-a-sandboxed-app/
      http://stackoverflow.com/questions/12153504/accessing-the-desktop-in-a-sandboxed-app
      */
-    static public var iddHomeDirectory: URL = {
+    static public var home: URL = {
         if NSObject.isAppStoreBuild {
             if let home = getpwuid(getuid()), let homePtr = home.pointee.pw_dir {
                 let homePath = FileManager.default.string(withFileSystemRepresentation: homePtr, length: Int(strlen(homePtr)))
-                
+
                 return URL.init(fileURLWithPath: homePath)
             }
         }
 
         return URL.init(fileURLWithPath: NSHomeDirectory())
     }()
-    
+
     static public var homeLibraryCaches: URL = {
-        return iddHomeDirectory.appendingPathComponent("Library/Caches")
+        return home.appendingPathComponent("Library/Caches")
     }()
 
     static public var systemLibraryCaches: URL = {
