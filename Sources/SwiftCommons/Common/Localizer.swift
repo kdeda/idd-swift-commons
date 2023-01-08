@@ -3,7 +3,7 @@
 //  SwiftCommons
 //
 //  Created by Klajd Deda on 7/4/17.
-//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2023 id-design, inc. All rights reserved.
 //  https://medium.com/@dcordero/a-different-way-to-deal-with-localized-strings-in-swift-3ea0da4cd143
 //
 //  To see more turn debug mode

@@ -3,7 +3,7 @@
 //  SwiftCommons
 //
 //  Created by Klajd Deda on 9/18/19.
-//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2023 id-design, inc. All rights reserved.
 //
 
 #if os(macOS)

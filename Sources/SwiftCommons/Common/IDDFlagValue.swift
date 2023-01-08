@@ -3,7 +3,7 @@
 //  SwiftCommons
 //
 //  Created by Klajd Deda on 6/11/18.
-//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2023 id-design, inc. All rights reserved.
 //
 // http://stackoverflow.com/questions/4716734/how-to-use-binary-flags-in-core-data
 /*
