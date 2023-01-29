@@ -16,7 +16,7 @@ extension URL {
     static public let logger: Logger = {
         return Log4swift.getLogger("URL")
     }()
-
+    
     /**
      A URL identifying the user's home directory, typically in `/Users`.
      Calling `NSHomeDirectory()` from a sandboxed app will return an descendant of the app sandbox.
@@ -29,18 +29,18 @@ extension URL {
         if NSObject.isAppStoreBuild {
             if let home = getpwuid(getuid()), let homePtr = home.pointee.pw_dir {
                 let homePath = FileManager.default.string(withFileSystemRepresentation: homePtr, length: Int(strlen(homePtr)))
-
+                
                 return URL.init(fileURLWithPath: homePath)
             }
         }
-
+        
         return URL.init(fileURLWithPath: NSHomeDirectory())
     }()
-
+    
     static public var homeLibraryCaches: URL = {
         return home.appendingPathComponent("Library/Caches")
     }()
-
+    
     static public var systemLibraryCaches: URL = {
         return URL.init(fileURLWithPath: "/Library/Caches")
     }()
@@ -77,7 +77,7 @@ extension URL {
         if let rv = (try? realURL.resourceValues(forKeys: [.volumeUUIDStringKey]))?.volumeUUIDString {
             return rv
         }
-
+        
         // for some mounted volumes mainly SMB or AFP we don't get a uuid
         // this will attempt to fetch the mount point and map it to an md5
         // of course if we are not mounted the following will fail as well
@@ -86,13 +86,13 @@ extension URL {
             URL.logger.error(".volumeUUIDStringKey failed, will default to the md5 hash for: '\(rv.absoluteString)'")
             return rv.absoluteString.md5
         }
-
+        
         // WTF
         //
         URL.logger.error(".volumeUUIDStringKey and .volumeURLForRemountingKey failed, will default to the md5 hash for: '\(self.path)'")
         return self.path.md5
     }
-
+    
     private func _sizeFrom(backupLog row: String) -> Int64 {
         let cleanedRow = row.trimmingCharacters(in: CharacterSet.whitespaces)
         let cleanedRow_ = cleanedRow.replacingOccurrences(of: "Zero", with: "0")
@@ -118,7 +118,7 @@ extension URL {
         }
         return rv
     }
-
+    
     // MARK: - Instance methods -
     public var fileExist: Bool {
         do {
@@ -129,7 +129,7 @@ extension URL {
         }
         return false
     }
-
+    
 #if os(macOS)
     public var fileIcon: NSImage {
         let resourceValues = try? self.resourceValues(forKeys: [.effectiveIconKey])
@@ -145,38 +145,38 @@ extension URL {
         return (try? self.resourceValues(forKeys: [.isDirectoryKey]))?
             .isDirectory ?? false
     }
-
+    
     public var isReadable: Bool {
         return (try? self.resourceValues(forKeys: [.isReadableKey]))?
             .isReadable ?? false
     }
-
+    
     public var isExecutable: Bool {
         return (try? self.resourceValues(forKeys: [.isExecutableKey]))?
             .isExecutable ?? false
     }
-
+    
     public var isWritable: Bool {
         let resourceValues = try? self.resourceValues(forKeys: [.isWritableKey])
         
         if resourceValues?.isWritable != nil {
             let parent = self.deletingLastPathComponent()
             let parentValues = try? parent.resourceValues(forKeys: [.isWritableKey])
-
+            
             if parentValues?.isWritable != nil {
                 return true
             }
         }
         return false
     }
-
+    
     // will fail for unreadable urls
     //
     public var isVolume: Bool {
         return (try? self.resourceValues(forKeys: [.isVolumeKey]))?
             .isVolume ?? false
     }
-
+    
 #if os(macOS)
     public var fileSystemInfo: (fileSystemType: String, isRemovable: Bool) {
         var isLocalMount: Bool = false
@@ -188,7 +188,7 @@ extension URL {
         var description: NSString? = nil
         var type: NSString? = nil
         var fileSystemType = "unknown"
-
+        
         _ = NSWorkspace.shared.getFileSystemInfo(forPath: self.path,
                                                  isRemovable: &isRemovable,
                                                  isWritable: &isWritable,
@@ -212,7 +212,7 @@ extension URL {
                 isMobileBackups = true
             }
         }
-
+        
         var fileStat : statfs = statfs()
         
         if statfs((self.path as NSString).fileSystemRepresentation, &fileStat) != 0 {
@@ -228,18 +228,18 @@ extension URL {
         return (fileSystemType: fileSystemType, isRemovable: isRemovable.boolValue)
     }
 #endif
-
+    
     public var volumeUUID: String {
         let mountedVolumes = Set(FileManager.default.mountedVolumes(true))
         return self._volumeUUID(mountedVolumes)
     }
-
+    
     public var volumeURL: URL {
         var realURL = self
         let mountedVolumes = Set(FileManager.default.mountedVolumes(true))
         let volumeUUID = realURL._volumeUUID(mountedVolumes)
         var crawlup = true
-
+        
         repeat {
             if realURL.isVolume && volumeUUID == realURL._volumeUUID(mountedVolumes) {
                 return realURL
@@ -255,24 +255,24 @@ extension URL {
         URL.logger.error("failed to fetch volume url for path: '\(self.path)'")
         return URL.init(fileURLWithPath: "/Volumes").appendingPathComponent("\(UUID.init().uuidString).iddAppKit")
     }
-
+    
     public var volumeCapacity: Int {
         return (try? self.resourceValues(forKeys: [.volumeTotalCapacityKey]))?
             .volumeTotalCapacity ?? -1
     }
-
+    
     public var volumeSupportsHardLinks: Bool {
         return (try? self.resourceValues(forKeys: [.volumeSupportsHardLinksKey]))?
             .volumeSupportsHardLinks ?? false
     }
-
+    
     public var isRootVolume: Bool {
         if isVolume && self.path == "/" {
             return true
         }
         return false
     }
-
+    
     // if the path is of the form
     // ${NSHomeDirectoryForUser(${USER_NAME})}/.Trash/...
     // ${VOLUME_ROOT/.Trashes/...
@@ -285,7 +285,7 @@ extension URL {
             URL.logger.info("volumeTrash: '\(path)'")
             return true
         }
-
+        
         if let index = pathComponents.firstIndex(of: ".Trash") {
             let userName = pathComponents[index - 1]
             let userHome = NSHomeDirectoryForUser(userName) ?? "/User/UnknownUserHome"
@@ -297,14 +297,14 @@ extension URL {
         }
         return false
     }
-
+    
     // the receiver shall be the user trash url or some top of the level trash url
     // ie: '/Users/kdeda/.Trash'
     //
     public func uniqueTrashURL(at sourceURL: URL) -> URL {
         let fileName = sourceURL.lastPathComponent
         var rv = self.appendingPathComponent(fileName)
-
+        
         if rv.fileExist {
             var stillWorking = true
             let pathExtension = (fileName as NSString).pathExtension
@@ -348,7 +348,7 @@ extension URL {
     //
     private var _fetchInodeUsingStat: UInt64 {
         var fileStat : stat = stat()
-
+        
         if stat((self.path as NSString).fileSystemRepresentation, &fileStat) != 0 {
             let errorString = String(utf8String: strerror(errno)) ?? "Unknown error code"
             
@@ -371,7 +371,7 @@ extension URL {
         
         if let data = resourceValues?.fileResourceIdentifier as? NSData {
             var rv = 0
-
+            
             data.getBytes(&rv, length: MemoryLayout<Int>.size)
             return UInt(rv)
         }
@@ -379,11 +379,11 @@ extension URL {
         //
         return 0
     }
-
+    
     public var inode: UInt64 {
         return _fetchInodeUsingStat
     }
-
+    
     public var pnode: UInt64 {
         let parent = self.deletingLastPathComponent()
         
@@ -394,7 +394,7 @@ extension URL {
         //
         return 0
     }
-
+    
     public var systemFileNumber: Int {
         do {
             let attributes = try FileManager.default.attributesOfItem(atPath: self.path)
@@ -405,15 +405,15 @@ extension URL {
         } catch {
             URL.logger.error("error: '\(error.localizedDescription)'")
         }
-
+        
         return -1
     }
-
+    
     public var typeIdentifier: String {
         return (try? self.resourceValues(forKeys: [.typeIdentifierKey]))?
             .typeIdentifier ?? ""
     }
-
+    
     /*
      * returns the most recent instance by using the url's contentModificationDate
      */
@@ -429,7 +429,7 @@ extension URL {
         }
         return otherURL
     }
-
+    
     // these will fail for resource fork files ..
     //
     public var logicalSize: Int64 {
@@ -441,7 +441,7 @@ extension URL {
     public var physicalSize: Int64 {
         return Int64((try? self.resourceValues(forKeys: [.fileAllocatedSizeKey]))?.fileAllocatedSize ?? 0)
     }
-
+    
     @discardableResult
     public func chown(to ownerAccountName: String, recursive recurseToChildren: Bool) -> Bool {
         var rv = false
@@ -502,7 +502,7 @@ extension URL {
         }
         return rv
     }
-
+    
     /*
      * "/Users/kdeda/LargeWhatSizeTest copy 2.zip" -> "/Users/kdeda/LargeWhatSizeTest copy 2${stringValue}.zip"
      */
@@ -538,14 +538,14 @@ extension URL {
      it does some type of magic because it reports sizes that seem too small
      ie:
      tmutil listbackups | while read filename ; do sudo tmutil uniquesize "$filename" ; done
-
+     
      what we do is look inside each baclup log and pluck the size that was written
      of course this code assumes you did not mock with the backup afterwards ...
      it better reflects the size really taken in disk and is super fast
      */
     public var timeMachineSliceSize: Int64 {
         var rv: Int64 = 0
-
+        
         do {
             if !self.fileExist {
                 // we will get here if we run in user space
@@ -568,7 +568,7 @@ extension URL {
                           let sizeString = endOfLine.substring(before: " (")
                     else { return .none }
                     // Space needed for this backup: 293.11 GB (71559933 blocks of size 4096)
-
+                    
                     return _sizeFrom(backupLog: sizeString)
                 }
                 rv = sizes.reduce(0, +)
@@ -579,7 +579,7 @@ extension URL {
         }
         return rv
     }
-
+    
     public var isHomeLibraryCaches: Bool {
         return self.path == URL.homeLibraryCaches.path
     }
@@ -587,12 +587,12 @@ extension URL {
     public var isSystemLibraryCaches: Bool {
         return self.path == URL.systemLibraryCaches.path
     }
-
+    
     public func appendingQuery(withKey key: String, andValue value: String?) -> URL {
         guard var urlComponents = URLComponents(string: absoluteString),
               let queryValue = value, queryValue.count > 0
         else {return absoluteURL}
-
+        
         var queryItems: [URLQueryItem] = urlComponents.queryItems ??  []
         let queryItem = URLQueryItem(name: key, value: queryValue)
         
@@ -611,10 +611,10 @@ extension URL {
             }
         }
 #endif
-
+        
         return nil
     }
-
+    
     // given a remote url, got fetch the data as string and return it await mode
     //
     public var fetchAsString: String {
@@ -641,7 +641,7 @@ extension URL {
         _ = semaphore.wait(timeout: .distantFuture)
         return rv
     }
-
+    
     public func ejectVolume() -> Bool {
 #if os(macOS)
         do {
@@ -654,51 +654,51 @@ extension URL {
 #endif
         return false
     }
-
+    
     public var isRegularFile: Bool {
         return (try? self.resourceValues(forKeys: [.isRegularFileKey]))?
             .isRegularFile ?? false
     }
-
+    
     public var isSymbolicLink: Bool {
         return (try? self.resourceValues(forKeys: [.isSymbolicLinkKey]))?
             .isSymbolicLink ?? false
     }
-
+    
     public var linkCount: Int32 {
         Int32((try? self.resourceValues(forKeys: [.linkCountKey]))?.linkCount ?? 0)
     }
-
+    
     /**
      Given a url with a lower case path, return a url with the proper canonical information.
-
+     
      For Example:
      Given a lower case path '/volumes/case sensitive/screen shots'
      In a volume with case sensitive paths.
      Given that '/Volumes/Case Sensitive/screen shots' exists
      We should get '/Volumes/Case Sensitive/screen shots'
-
+     
      OR:
      Given that '/Volumes/Case Sensitive/Screen Shots' exists
      We should get '/Volumes/Case Sensitive/Screen Shots'
-
+     
      In a volume with case in sensitive paths.
      Given that '/Volumes/Case Sensitive/screen shots' exists
      We should get '/Volumes/Case Sensitive/screen shots'
-
+     
      OR:
      Given that '/Volumes/Case Sensitive/Screen Shots' exists
      We should get '/Volumes/Case Sensitive/Screen Shots'
      */
     public var canonicalURL: URL {
         let resourceValues = try? self.resourceValues(forKeys: [.canonicalPathKey])
-
+        
         if let canonicalPath = resourceValues?.canonicalPath as? String {
             return URL(fileURLWithPath: canonicalPath)
         }
         return self
     }
-
+    
     public func createLock() {
         do {
             try "".write(to: self, atomically: true, encoding: .ascii)
@@ -708,7 +708,7 @@ extension URL {
             URL.logger.error("error: '\(error)'")
         }
     }
-
+    
     public func removeLock() {
         do {
             try FileManager.default.removeItem(at: self)
@@ -718,18 +718,18 @@ extension URL {
             URL.logger.error("error: '\(error)'")
         }
     }
-
+    
     public var hasLock: Bool {
         self.fileExist
     }
-
+    
     /**
      Should very quickly append the data at the end of this url.
      Of course this is not thread safe, but you can make it so using the createLock/removeLock
      */
     public func append(data: Data) {
         let startDate = Date()
-
+        
         do {
             if !self.fileExist {
                 // create an empty file
@@ -744,6 +744,22 @@ extension URL {
         } catch {
             URL.logger.error("error: '\(error.localizedDescription)'")
         }
+    }
+    
+    @available(macOS 11, *)
+    /// Returns an array of immediate child urls, without recursing deep into the file hierarchy
+    public var contentsOfDirectory: [URL] {
+        (try? FileManager.default.contentsOfDirectory(
+            at: self,
+            includingPropertiesForKeys: nil,
+            options: .producesRelativePathURLs
+        )) ?? []
+    }
+}
+
+extension URL: Identifiable {
+    public var id: String {
+        self.path
     }
 }
 
