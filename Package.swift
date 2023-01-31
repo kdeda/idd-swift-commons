@@ -16,9 +16,7 @@ let package = Package(
             targets: ["SwiftCommons"]),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/kdeda/idd-log4-swift.git", from: "1.2.1"),
+        .package(url: "https://github.com/kdeda/idd-log4-swift.git", from: "1.2.3"),
         .package(url: "https://github.com/kdeda/idd-zstd-swift.git", from: "1.2.1"),
     ],
     targets: [
